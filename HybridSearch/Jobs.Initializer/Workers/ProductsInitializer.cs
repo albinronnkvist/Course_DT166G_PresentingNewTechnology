@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
-public class Worker : BackgroundService
+public class ProductsInitializer : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
+    private readonly ILogger<ProductsInitializer> _logger;
 
-    public Worker(ILogger<Worker> logger)
+    public ProductsInitializer(ILogger<ProductsInitializer> logger)
     {
         _logger = logger;
     }
@@ -21,7 +21,7 @@ public class Worker : BackgroundService
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("ProductsInitializer running at: {time}", DateTimeOffset.Now);
             }
             await Task.Delay(1000, stoppingToken);
         }
