@@ -7,4 +7,8 @@
     <AssemblyName>AlbinRonnkvist.HybridSearch.Core</AssemblyName>
     <RootNamespace>AlbinRonnkvist.HybridSearch.Core</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5" />
+  </ItemGroup>
 </Project>
