@@ -4,5 +4,5 @@ namespace AlbinRonnkvist.HybridSearch.Embedding.Services;
 
 public interface IEmbeddingGenerator
 {
-    Task<Result<decimal[], string>> GenerateEmbedding();
+    Task<Result<decimal[], string>> GenerateEmbedding(string text);
 }

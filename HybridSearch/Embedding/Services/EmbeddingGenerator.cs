@@ -1,11 +1,25 @@
+using AlbinRonnkvist.HybridSearch.Embedding.ApiClients;
 using CSharpFunctionalExtensions;
 
 namespace AlbinRonnkvist.HybridSearch.Embedding.Services;
 
 public class EmbeddingGenerator : IEmbeddingGenerator
 {
-    public Task<Result<decimal[], string>> GenerateEmbedding()
+    private readonly IEmbeddingApiClient _embeddingApiClient;
+
+    public EmbeddingGenerator(IEmbeddingApiClient embeddingApiClient)
     {
-        throw new NotImplementedException();
+        _embeddingApiClient = embeddingApiClient; 
+    }
+
+    public async Task<Result<decimal[], string>> GenerateEmbedding(string text)
+    {
+        var result = await _embeddingApiClient.GetEmbedding(text);
+        if (result.IsFailure)
+        {
+            return Result.Failure<decimal[], string>(result.Error);
+        }
+
+        return Result.Success<decimal[], string>(result.Value.Embedding);
     }
 }
