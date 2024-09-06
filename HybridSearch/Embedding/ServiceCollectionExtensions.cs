@@ -1,4 +1,5 @@
 using AlbinRonnkvist.HybridSearch.Embedding.Options;
+using AlbinRonnkvist.HybridSearch.Embedding.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,5 +10,6 @@ public static class ServiceCollectionExtensions
     public static void ConfigureEmbeddingProject(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EmbeddingApiOptions>(configuration.GetSection(nameof(EmbeddingApiOptions)));
+        services.AddTransient<IEmbeddingGenerator, EmbeddingGenerator>();
     }
 }
