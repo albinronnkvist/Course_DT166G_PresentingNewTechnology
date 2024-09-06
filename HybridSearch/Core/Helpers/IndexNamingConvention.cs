@@ -10,11 +10,11 @@ public static class IndexNamingConvention
     public static string GetTemplatePattern(string indexName) 
         => $"{indexName}*";
     
-    public static string GetVersionedindexName(string indexName, int version) 
+    public static string GetVersionedIndexName(string indexName, int version) 
         => $"{indexName}{VersionSuffix}{version}";
 
     public static string GetVersionedAlias(string indexName, int version) 
-        => $"{indexName}{VersionSuffix}{version}";
+        => $"{indexName}{VersionSuffix}{version}-alias";
 
     public static string GetSearchAlias(string indexName) 
         => indexName;

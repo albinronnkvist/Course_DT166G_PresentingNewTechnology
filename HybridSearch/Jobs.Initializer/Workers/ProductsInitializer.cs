@@ -1,32 +1,37 @@
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 using Elastic.Clients.Elasticsearch;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
 public class ProductsInitializer(ILogger<ProductsInitializer> logger,
-    ElasticsearchClient elasticsearchClient,
-    IProductIndexTemplate productIndexTemplate) : BackgroundService
+    IProductIndexTemplateCreator productIndexTemplateCreator,
+    IProductIndexCreator productIndexCreator) : BackgroundService
 {
     private readonly ILogger<ProductsInitializer> _logger = logger;
-    private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
-    private readonly IProductIndexTemplate _productIndexTemplate = productIndexTemplate;
+    private readonly IProductIndexTemplateCreator _productIndexTemplateCreator = productIndexTemplateCreator;
+    private readonly IProductIndexCreator _productIndexCreator = productIndexCreator;
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        var res = await _productIndexTemplate.CreateIndexTemplate();
-        if(res.IsSuccess)
+        var indexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(ct);
+        var indexCreationResult = await _productIndexCreator.CreateIndex(ct);
+
+        if(indexTemplateResult.IsSuccess)
         {
-            _logger.LogInformation("Index 'products' created: {ay}");
+            _logger.LogInformation("Index template 'products-template' created");
         }
-
         else {
-            _logger.LogError("Failed to create index 'products': {ay}", res.Error);
+            _logger.LogError("Failed to create index template 'products-template': {Error}", indexTemplateResult.Error);
         }
 
-        await Task.Delay(2000, stoppingToken);
+        if(indexCreationResult.IsSuccess)
+        {
+            _logger.LogInformation("Index 'products' created");
+        }
+        else {
+            _logger.LogError("Failed to create index 'products': {Error}", indexCreationResult.Error);
+        }
 
-        _logger.LogInformation("ProductsInitializer running at: {time}", DateTimeOffset.Now);
-        var response = await _elasticsearchClient.Indices.ExistsAsync("products", stoppingToken);
-        _logger.LogInformation("Index 'products' exists: {exists} {ay}", response.Exists, response.DebugInformation);
+        await StopAsync(ct);
     }
 }

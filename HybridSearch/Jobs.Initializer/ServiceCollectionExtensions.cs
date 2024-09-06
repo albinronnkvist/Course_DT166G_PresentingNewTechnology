@@ -1,8 +1,9 @@
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
@@ -34,11 +35,13 @@ public static class ServiceCollectionExtensions
     public static void ConfigureCustomServices(this IServiceCollection services)
     {
         services.AddTransient<IIndexTemplateManager, IndexTemplateManager>();
+        services.AddTransient<IIndexManager, IndexManager>();
     }
 
     public static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
-        services.AddTransient<IProductIndexTemplate, ProductIndexTemplate>();
+        services.AddTransient<IProductIndexTemplateCreator, ProductIndexTemplateCreator>();
+        services.AddTransient<IProductIndexCreator, ProductIndexCreator>();
     }
 }
