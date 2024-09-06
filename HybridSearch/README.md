@@ -20,7 +20,7 @@ Hybrid Search implemented in C# .NET & Elasticsearch by Roberto Piran Amedi and 
 # Contribute
 
 To do:
-- Service for generating text embeddings
+- Service for generating text embeddings: https://huggingface.co/docs/api-inference/detailed_parameters?code=js#feature-extraction-task
 - ETL process for loading Elasticsearch with documents (preferably a large data set)
 - API:
     - CRUD operations on Elasticsearch documents

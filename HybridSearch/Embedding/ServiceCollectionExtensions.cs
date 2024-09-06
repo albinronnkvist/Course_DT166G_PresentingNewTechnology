@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
             var embeddingApiOptions = serviceProvider.GetRequiredService<IOptions<EmbeddingApiOptions>>().Value;
 
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {embeddingApiOptions.AccessToken}");
-            httpClient.BaseAddress = new Uri($"{embeddingApiOptions.BaseUrl}/{embeddingApiOptions.ModelId}"); // https://api-inference.huggingface.co/models/<MODEL_ID>
+            httpClient.BaseAddress = new Uri($"{embeddingApiOptions.BaseUrl}{embeddingApiOptions.ModelId}");
         }).AddTransientHttpErrorPolicy(x => 
             x.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 3)));
     }
