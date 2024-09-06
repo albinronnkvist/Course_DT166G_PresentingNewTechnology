@@ -39,6 +39,6 @@ public static class ServiceCollectionExtensions
     public static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
-        services.AddTransient<IProductIndexTemplate, ProductIndexTemplate>();
+        services.AddTransient<IProductIndexTemplateCreator, ProductIndexTemplateCreator>();
     }
 }

@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
-public interface IProductIndexTemplate
+public interface IProductIndexCreator
 {
-    Task<UnitResult<string>> CreateIndexTemplate();
+    Task<UnitResult<string>> CreateIndex();
 }

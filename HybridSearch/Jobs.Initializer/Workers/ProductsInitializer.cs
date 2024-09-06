@@ -5,15 +5,15 @@ namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
 public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     ElasticsearchClient elasticsearchClient,
-    IProductIndexTemplate productIndexTemplate) : BackgroundService
+    IProductIndexTemplateCreator productIndexTemplateCreator) : BackgroundService
 {
     private readonly ILogger<ProductsInitializer> _logger = logger;
     private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
-    private readonly IProductIndexTemplate _productIndexTemplate = productIndexTemplate;
+    private readonly IProductIndexTemplateCreator _productIndexTemplateCreator = productIndexTemplateCreator;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var res = await _productIndexTemplate.CreateIndexTemplate();
+        var res = await _productIndexTemplateCreator.CreateIndexTemplate();
         if(res.IsSuccess)
         {
             _logger.LogInformation("Index 'products' created");

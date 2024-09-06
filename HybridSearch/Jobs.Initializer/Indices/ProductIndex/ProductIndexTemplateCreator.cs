@@ -7,12 +7,12 @@ using Microsoft.Extensions.Options;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
-public class ProductIndexTemplate : IProductIndexTemplate
+public class ProductIndexTemplateCreator : IProductIndexTemplateCreator
 {
     private readonly IIndexTemplateManager _indexTemplateManager;
     private readonly ProductIndexOptions _options;
 
-    public ProductIndexTemplate(IOptions<ProductIndexOptions> options, IIndexTemplateManager indexTemplateManager)
+    public ProductIndexTemplateCreator(IOptions<ProductIndexOptions> options, IIndexTemplateManager indexTemplateManager)
     {
         _options = options.Value;
         _indexTemplateManager = indexTemplateManager;
