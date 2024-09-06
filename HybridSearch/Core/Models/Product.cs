@@ -1,4 +1,4 @@
-namespace AlbinRonnkvist.HybridSearch.Core;
+namespace AlbinRonnkvist.HybridSearch.Core.Models;
 
 public class Product
 {
