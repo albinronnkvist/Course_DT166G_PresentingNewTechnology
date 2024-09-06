@@ -1,4 +1,6 @@
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 
@@ -27,5 +29,16 @@ public static class ServiceCollectionExtensions
         return new ElasticsearchClientSettings(new Uri(elasticsearchOptions.Url))
                     .CertificateFingerprint(elasticsearchOptions.FingerPrint)
                     .Authentication(new BasicAuthentication(elasticsearchOptions.Username, elasticsearchOptions.Password));
+    }
+
+    public static void ConfigureCustomServices(this IServiceCollection services)
+    {
+        services.AddTransient<IIndexTemplateManager, IndexTemplateManager>();
+    }
+
+    public static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
+        services.AddTransient<IProductIndexTemplate, ProductIndexTemplate>();
     }
 }
