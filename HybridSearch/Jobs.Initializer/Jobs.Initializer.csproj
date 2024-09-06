@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <AssemblyName>AlbinRonnkvist.HybridSearch.Jobs.Initializer</AssemblyName>
+    <RootNamespace>AlbinRonnkvist.HybridSearch.Jobs.Initializer</RootNamespace>
+    <UserSecretsId>dotnet-Jobs.Initializer-66c2a84e-ba8b-40eb-bd7a-e455a0d1fc4a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+</Project>
