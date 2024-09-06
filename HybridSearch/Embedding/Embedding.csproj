@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <AssemblyName>AlbinRonnkvist.HybridSearch.Embedding</AssemblyName>
+    <RootNamespace>AlbinRonnkvist.HybridSearch.Embedding</RootNamespace>
+  </PropertyGroup>
+
+</Project>
