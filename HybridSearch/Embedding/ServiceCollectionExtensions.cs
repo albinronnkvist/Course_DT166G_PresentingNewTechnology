@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using AlbinRonnkvist.HybridSearch.Embedding.ApiClients;
 using AlbinRonnkvist.HybridSearch.Embedding.Options;
 using AlbinRonnkvist.HybridSearch.Embedding.Services;
@@ -18,7 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<IEmbeddingApiClient, EmbeddingApiClient>((serviceProvider, httpClient) => {
             var embeddingApiOptions = serviceProvider.GetRequiredService<IOptions<EmbeddingApiOptions>>().Value;
 
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {embeddingApiOptions.AccessToken}");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", embeddingApiOptions.AccessToken);
             httpClient.BaseAddress = new Uri($"{embeddingApiOptions.BaseUrl}{embeddingApiOptions.ModelId}");
         }).AddTransientHttpErrorPolicy(x => 
             x.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 3)));

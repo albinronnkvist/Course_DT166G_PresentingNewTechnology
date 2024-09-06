@@ -2,13 +2,16 @@ namespace AlbinRonnkvist.HybridSearch.Embedding.ApiClients;
 
 using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Logging;
 
 public class EmbeddingApiClient : IEmbeddingApiClient
 {
     public HttpClient _httpClient;
+    private readonly ILogger<EmbeddingApiClient> _logger;
 
-    public EmbeddingApiClient(HttpClient httpClient)
+    public EmbeddingApiClient(HttpClient httpClient, ILogger<EmbeddingApiClient> logger)
     {
+        _logger = logger;
         _httpClient = httpClient;
     }
 
@@ -16,16 +19,16 @@ public class EmbeddingApiClient : IEmbeddingApiClient
     {
         var payload = new EmbeddingApiClientRequest
         {
-            Text = text
+            Inputs = text
         };
 
         try
         {
             var response = await _httpClient.PostAsJsonAsync("", payload);
-
             if (!response.IsSuccessStatusCode)
             {
-                return Result.Failure<EmbeddingApiClientResponse, string>($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                var errorDescription = await response.Content.ReadAsStringAsync();
+                return Result.Failure<EmbeddingApiClientResponse, string>($"Error: {response.StatusCode} - {errorDescription}");
             }
 
             var result = await response.Content.ReadFromJsonAsync<EmbeddingApiClientResponse>();
