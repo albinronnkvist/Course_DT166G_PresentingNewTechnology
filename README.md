@@ -1,1 +1,1 @@
-# Course_DT166G_PresentingNewTechnology
+# DT166G - Presenting New Technology
