@@ -4,18 +4,13 @@ using Elastic.Clients.Elasticsearch.IndexManagement;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
 
-public class IndexTemplateManager : IIndexTemplateManager
+public class IndexTemplateManager(ElasticsearchClient elasticsearchClient) : IIndexTemplateManager
 {
-    private readonly ElasticsearchClient _elasticsearchClient;
+    private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
 
-    public IndexTemplateManager(ElasticsearchClient elasticsearchClient)
+    public async Task<UnitResult<string>> UpsertIndexTemplate(PutIndexTemplateRequest request, CancellationToken ct)
     {
-        _elasticsearchClient = elasticsearchClient;
-    }
-    
-    public async Task<UnitResult<string>> UpsertIndexTemplate(PutIndexTemplateRequest request)
-    {
-        var response = await _elasticsearchClient.Indices.PutIndexTemplateAsync(request);
+        var response = await _elasticsearchClient.Indices.PutIndexTemplateAsync(request, ct);
         if (!response.IsValidResponse)
         {
             return UnitResult.Failure(response.DebugInformation);

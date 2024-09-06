@@ -18,7 +18,7 @@ public class ProductIndexTemplateCreator : IProductIndexTemplateCreator
         _indexTemplateManager = indexTemplateManager;
     }
 
-    public async Task<UnitResult<string>> CreateIndexTemplate()
+    public async Task<UnitResult<string>> CreateIndexTemplate(CancellationToken ct)
     {
         var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, _options.Version)
             .WithCustomMappings(new TypeMapping
@@ -31,7 +31,7 @@ public class ProductIndexTemplateCreator : IProductIndexTemplateCreator
             request.WithSearchAlias();
         }
 
-        return await _indexTemplateManager.UpsertIndexTemplate(request.Build());
+        return await _indexTemplateManager.UpsertIndexTemplate(request.Build(), ct);
     }
 
     private static Properties GetProperties() {
