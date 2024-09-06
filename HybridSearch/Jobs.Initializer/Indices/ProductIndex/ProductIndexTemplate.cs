@@ -5,7 +5,7 @@ using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Options;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
+namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
 public class ProductIndexTemplate : IProductIndexTemplate
 {

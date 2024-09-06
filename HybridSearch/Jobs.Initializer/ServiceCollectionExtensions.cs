@@ -1,6 +1,6 @@
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 

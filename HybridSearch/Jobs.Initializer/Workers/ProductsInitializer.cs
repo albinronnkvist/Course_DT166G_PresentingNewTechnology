@@ -1,4 +1,4 @@
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 using Elastic.Clients.Elasticsearch;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
@@ -16,7 +16,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         var res = await _productIndexTemplate.CreateIndexTemplate();
         if(res.IsSuccess)
         {
-            _logger.LogInformation("Index 'products' created: {ay}");
+            _logger.LogInformation("Index 'products' created");
         }
 
         else {

@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.Indices.Product;
+namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
 public interface IProductIndexTemplate
 {
