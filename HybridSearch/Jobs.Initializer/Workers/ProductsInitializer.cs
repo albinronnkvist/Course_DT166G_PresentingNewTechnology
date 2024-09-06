@@ -1,5 +1,4 @@
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
-using Elastic.Clients.Elasticsearch;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 

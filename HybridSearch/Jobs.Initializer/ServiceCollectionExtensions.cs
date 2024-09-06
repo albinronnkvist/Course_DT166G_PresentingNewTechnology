@@ -9,17 +9,25 @@ namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
 public static class ServiceCollectionExtensions
 {
-    public static void ConfigureElasticsearch(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    public static void ConfigureJobsInitializerProject(this IServiceCollection services,
+        IConfiguration configuration, IHostEnvironment environment) 
+    {
+        services.ConfigureElasticsearch(configuration, environment);
+        services.ConfigureIndices(configuration);
+        services.ConfigureCustomServices();
+    }
+
+    private static void ConfigureElasticsearch(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         var elasticsearchOptions = configuration.GetSection(nameof(ElasticsearchOptions))
             .Get<ElasticsearchOptions>() ?? throw new ArgumentNullException(nameof(ElasticsearchOptions), "Elasticsearch options are not configured properly");
 
-        var elasticSearchSettings = CreateElasticsearchSettings(environment, elasticsearchOptions);
+        var elasticSearchSettings = ConfigureElasticsearchSettings(environment, elasticsearchOptions);
 
         services.AddSingleton(new ElasticsearchClient(elasticSearchSettings));
     }
 
-    private static ElasticsearchClientSettings CreateElasticsearchSettings(IHostEnvironment environment, ElasticsearchOptions elasticsearchOptions)
+    private static ElasticsearchClientSettings ConfigureElasticsearchSettings(IHostEnvironment environment, ElasticsearchOptions elasticsearchOptions)
     {
         if(environment.IsDevelopment())
         {
@@ -32,16 +40,17 @@ public static class ServiceCollectionExtensions
                     .Authentication(new BasicAuthentication(elasticsearchOptions.Username, elasticsearchOptions.Password));
     }
 
-    public static void ConfigureCustomServices(this IServiceCollection services)
-    {
-        services.AddTransient<IIndexTemplateManager, IndexTemplateManager>();
-        services.AddTransient<IIndexManager, IndexManager>();
-    }
-
-    public static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
+    private static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
         services.AddTransient<IProductIndexTemplateCreator, ProductIndexTemplateCreator>();
         services.AddTransient<IProductIndexCreator, ProductIndexCreator>();
     }
+
+    private static void ConfigureCustomServices(this IServiceCollection services)
+    {
+        services.AddTransient<IIndexTemplateManager, IndexTemplateManager>();
+        services.AddTransient<IIndexManager, IndexManager>();
+    }
+
 }
