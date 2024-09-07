@@ -23,7 +23,7 @@ public class ProductIndexTemplateCreator : IProductIndexTemplateCreator
         var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, _options.Version)
             .WithCustomMappings(new TypeMapping
             {
-                Properties = GetProperties()
+                Properties = GetProperties(_options.EmbeddingDimensions)
             });
 
         if (_options.AddSearchAlias)
@@ -34,11 +34,11 @@ public class ProductIndexTemplateCreator : IProductIndexTemplateCreator
         return await _indexTemplateManager.UpsertIndexTemplate(request.Build(), ct);
     }
 
-    private static Properties GetProperties() {
+    private static Properties GetProperties(int dimensions) {
         var properties = new Properties();
         properties.Add<Core.Models.Product>(x => x.Id, new IntegerNumberProperty());
         properties.Add<Core.Models.Product>(p => p.Title, new TextProperty());
-        properties.Add<Core.Models.Product>(p => p.TitleEmbedding, new DenseVectorProperty { Dims = 768 });
+        properties.Add<Core.Models.Product>(p => p.TitleEmbedding, new DenseVectorProperty { Dims = dimensions });
 
         return properties;
     }
