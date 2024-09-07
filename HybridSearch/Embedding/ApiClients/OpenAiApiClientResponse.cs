@@ -6,7 +6,7 @@ public record OpenAiApiClientResponse
 {
     public required string Object { get; init; }
 
-    public required OpenAiApiClientResponseData Data { get; init; }
+    public required List<OpenAiApiClientResponseData> Data { get; init; }
 
     public required string Model { get; init; }
 

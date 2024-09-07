@@ -26,6 +26,6 @@ public class OpenAiEmbeddingGenerator(IOptions<OpenAiEmbeddingApiOptions> option
             return Result.Failure<decimal[], string>(result.Error);
         }
 
-        return Result.Success<decimal[], string>(result.Value.Data.Embedding);
+        return Result.Success<decimal[], string>(result.Value.Data.First().Embedding);
     }
 }
