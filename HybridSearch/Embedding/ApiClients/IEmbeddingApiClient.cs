@@ -2,7 +2,7 @@ namespace AlbinRonnkvist.HybridSearch.Embedding.ApiClients;
 
 using CSharpFunctionalExtensions;
 
-public interface IEmbeddingApiClient
+public interface IEmbeddingApiClient<TRequest, TResponse>
 {
-    Task<Result<EmbeddingApiClientResponse, string>> GetEmbedding(string text);
+    Task<Result<TResponse, string>> GetEmbedding(TRequest request);
 }
