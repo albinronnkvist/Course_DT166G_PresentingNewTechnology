@@ -11,12 +11,13 @@ public class OpenAiEmbeddingGenerator(IOptions<OpenAiEmbeddingApiOptions> option
     private readonly OpenAiEmbeddingApiOptions _options = options.Value;
     private readonly IEmbeddingApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse> _embeddingApiClient = embeddingApiClient;
 
-    public async Task<Result<decimal[], string>> GenerateEmbedding(string text)
+    public async Task<Result<decimal[], string>> GenerateEmbedding(string text, int dimensions)
     {
         var request = new OpenAiApiClientRequest
         {
             Input = text,
-            Model = _options.Model
+            Model = _options.Model,
+            Dimensions = dimensions
         };
 
         var result = await _embeddingApiClient.GetEmbedding(request);
@@ -25,6 +26,6 @@ public class OpenAiEmbeddingGenerator(IOptions<OpenAiEmbeddingApiOptions> option
             return Result.Failure<decimal[], string>(result.Error);
         }
 
-        return Result.Success<decimal[], string>(result.Value.Embedding);
+        return Result.Success<decimal[], string>(result.Value.Data.Embedding);
     }
 }
