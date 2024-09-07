@@ -14,13 +14,15 @@ public static class ServiceCollectionExtensions
 {
     public static void ConfigureEmbeddingProject(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<EmbeddingApiOptions>(configuration.GetSection(nameof(EmbeddingApiOptions)));
-        services.AddTransient<IEmbeddingGenerator, EmbeddingGenerator>();
-        services.AddHttpClient<IEmbeddingApiClient, EmbeddingApiClient>((serviceProvider, httpClient) => {
-            var embeddingApiOptions = serviceProvider.GetRequiredService<IOptions<EmbeddingApiOptions>>().Value;
+        services.Configure<OpenAiEmbeddingApiOptions>(configuration.GetSection(nameof(OpenAiEmbeddingApiOptions)));
+        services.AddTransient<IEmbeddingGenerator, OpenAiEmbeddingGenerator>();
+        services.AddHttpClient<IEmbeddingApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>, OpenAiApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>>((serviceProvider, httpClient) => {
+            var openAiEmbeddingApiOptions = serviceProvider.GetRequiredService<IOptions<OpenAiEmbeddingApiOptions>>().Value;
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", embeddingApiOptions.AccessToken);
-            httpClient.BaseAddress = new Uri($"{embeddingApiOptions.BaseUrl}{embeddingApiOptions.ModelId}");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiEmbeddingApiOptions.AccessToken);
+            httpClient.DefaultRequestHeaders.Add("OpenAI-Organization", openAiEmbeddingApiOptions.OrganizationId);
+            httpClient.DefaultRequestHeaders.Add("OpenAI-Project", openAiEmbeddingApiOptions.ProjectId);
+            httpClient.BaseAddress = new Uri(openAiEmbeddingApiOptions.BaseUrl);
         }).AddTransientHttpErrorPolicy(x => 
             x.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 3)));
     }
