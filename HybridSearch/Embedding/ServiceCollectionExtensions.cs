@@ -20,6 +20,8 @@ public static class ServiceCollectionExtensions
             var openAiEmbeddingApiOptions = serviceProvider.GetRequiredService<IOptions<OpenAiEmbeddingApiOptions>>().Value;
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiEmbeddingApiOptions.AccessToken);
+            httpClient.DefaultRequestHeaders.Add("OpenAI-Organization", openAiEmbeddingApiOptions.OrganizationId);
+            httpClient.DefaultRequestHeaders.Add("OpenAI-Project", openAiEmbeddingApiOptions.ProjectId);
             httpClient.BaseAddress = new Uri(openAiEmbeddingApiOptions.BaseUrl);
         }).AddTransientHttpErrorPolicy(x => 
             x.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 3)));
