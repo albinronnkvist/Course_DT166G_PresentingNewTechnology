@@ -23,10 +23,13 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     {        
         _logger.LogInformation("Starting initialization of products index...");
         
-        var indexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(ct);
-        if(indexTemplateResult.IsFailure)
+        // Get previous index version by using search alias
+
+        // Create new index template but do not add search alias until all indices are created and populated
+        var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(false, ct);
+        if(preIndexTemplateResult.IsFailure)
         {
-            return Result.Failure<string, string>(indexTemplateResult.Error);
+            return Result.Failure<string, string>(preIndexTemplateResult.Error);
         }
 
         var indexCreationResult = await _productIndexCreator.CreateIndex(ct);
@@ -34,6 +37,15 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         {
             return Result.Failure<string, string>(indexCreationResult.Error);
         }
+
+        // Reassign search alias to new indices as soon as new indices are green
+        // Update index template with search alias as true
+        var postIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(false, ct);
+        if(postIndexTemplateResult.IsFailure)
+        {
+            return Result.Failure<string, string>(postIndexTemplateResult.Error);
+        }
+        // Delete old indices
 
         return Result.Success<string, string>("Success");
 

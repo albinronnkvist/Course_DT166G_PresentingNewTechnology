@@ -4,5 +4,5 @@ namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
 public interface IProductIndexTemplateCreator
 {
-    Task<UnitResult<string>> CreateIndexTemplate(CancellationToken ct);
+    Task<UnitResult<string>> CreateIndexTemplate(bool addSearchAlias, CancellationToken ct);
 }
