@@ -1,6 +1,8 @@
 using AlbinRonnkvist.HybridSearch.Embedding.Services;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
+using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
+using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Options;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
@@ -9,7 +11,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     IOptions<ProductIndexOptions> options,
     IProductIndexTemplateCreator productIndexTemplateCreator,
     IProductIndexCreator productIndexCreator,
-    IEmbeddingGenerator embeddingGenerator) : BackgroundService
+    IEmbeddingGenerator embeddingGenerator) : IInitializer
 {
     private readonly ILogger<ProductsInitializer> _logger = logger;
     private readonly ProductIndexOptions _options = options.Value;
@@ -17,31 +19,23 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     private readonly IProductIndexCreator _productIndexCreator = productIndexCreator;
     private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
 
-    protected override async Task ExecuteAsync(CancellationToken ct)
-    {
-        // TODO: move logic to separate services
+    public async Task<Result<string, string>> Execute(CancellationToken ct)
+    {        
+        _logger.LogInformation("Starting initialization of products index...");
         
-        // Uncomment to create index templates and indices
-        /*
         var indexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(ct);
+        if(indexTemplateResult.IsFailure)
+        {
+            return Result.Failure<string, string>(indexTemplateResult.Error);
+        }
+
         var indexCreationResult = await _productIndexCreator.CreateIndex(ct);
-
-        if(indexTemplateResult.IsSuccess)
+        if(indexCreationResult.IsFailure) 
         {
-            _logger.LogInformation("Index template 'products-template' created");
-        }
-        else {
-            _logger.LogError("Failed to create index template 'products-template': {Error}", indexTemplateResult.Error);
+            return Result.Failure<string, string>(indexCreationResult.Error);
         }
 
-        if(indexCreationResult.IsSuccess)
-        {
-            _logger.LogInformation("Index 'products' created");
-        }
-        else {
-            _logger.LogError("Failed to create index 'products': {Error}", indexCreationResult.Error);
-        }
-        */
+        return Result.Success<string, string>("Success");
 
         // Uncomment to generate an embedding
         /*
