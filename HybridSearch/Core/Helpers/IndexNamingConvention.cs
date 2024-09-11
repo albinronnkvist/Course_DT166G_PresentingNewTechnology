@@ -17,5 +17,5 @@ public static class IndexNamingConvention
         => $"va-{indexName}{VersionSuffix}{version}";
 
     public static string GetSearchAlias(string indexName) 
-        => $"a-{indexName}";
+        => $"sa-{indexName}";
 }
