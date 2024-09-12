@@ -10,19 +10,19 @@ public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManag
 {
     private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
 
-    public async Task<Result<int, string>> GenerateNextIndexVersion(string indexName, CancellationToken ct)
+    public async Task<Result<(int? OldVersion, int NewVersion), string>> GenerateNextIndexVersion(string indexName, CancellationToken ct)
     {
         var indexNamePattern = IndexNamingConvention.GetTemplatePattern(indexName);
 
         var response = await _elasticsearchClient.Indices.GetAsync(indexNamePattern, ct);
         if (!response.IsValidResponse)
         {
-            return CSharpFunctionalExtensions.Result.Failure<int, string>($"Invalid response when fetching indices by search alias: {response.DebugInformation}");
+            return CSharpFunctionalExtensions.Result.Failure<(int? OldVersion, int NewVersion), string>($"Invalid response when fetching indices by search alias: {response.DebugInformation}");
         }
 
         if (response.Indices.Count is 0)
         {
-            return CSharpFunctionalExtensions.Result.Success<int, string>(1);
+            return CSharpFunctionalExtensions.Result.Success<(int? OldVersion, int NewVersion), string>((null, 1));
         }
 
         var currentIndexName = response.Indices.Keys.First().ToString();
@@ -30,10 +30,10 @@ public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManag
         var versionResult = IndexNamingConvention.ExtractVersionFromIndexName(currentIndexName);
         if(versionResult.IsFailure)
         {
-            return CSharpFunctionalExtensions.Result.Failure<int, string>(versionResult.Error);
+            return CSharpFunctionalExtensions.Result.Failure<(int? OldVersion, int NewVersion), string>(versionResult.Error);
         }
 
-        return CSharpFunctionalExtensions.Result.Success<int, string>(versionResult.Value + 1);
+        return CSharpFunctionalExtensions.Result.Success<(int? OldVersion, int NewVersion), string>((versionResult.Value, versionResult.Value + 1));
     }
     
     public async Task<UnitResult<string>> CreateIndex(string indexName, int version, CancellationToken ct)
@@ -71,22 +71,53 @@ public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManag
         return UnitResult.Success<string>();
     }
 
-    public async Task<UnitResult<string>> ReassignSearchAlias(string indexName, int version, CancellationToken ct)
+    public async Task<UnitResult<string>> ReassignSearchAlias(string indexName, int? oldVersion, int newVersion, CancellationToken ct)
     {
-        var indexNamePattern = IndexNamingConvention.GetTemplatePattern(indexName);
-        var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, version);
         var searchAlias = IndexNamingConvention.GetSearchAlias(indexName);
 
+        if(oldVersion is not null)
+        {
+            var oldVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, oldVersion.Value);
+            var removeAliasesResponse = await _elasticsearchClient.Indices
+                .UpdateAliasesAsync(a => a
+                    .Actions(actions => actions
+                        .Remove(r => r.Index(oldVersionedIndexName).Alias(searchAlias))
+                    ), ct);
+
+            if (!removeAliasesResponse.IsValidResponse)
+            {
+                return UnitResult.Failure(removeAliasesResponse.DebugInformation);
+            }
+        }
+
+        var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, newVersion);
         var updateAliasesResponse = await _elasticsearchClient.Indices
             .UpdateAliasesAsync(a => a
                 .Actions(actions => actions
-                    .Remove(r => r.Alias(searchAlias).Index(indexNamePattern))
                     .Add<AddAction>(a => a.Alias(searchAlias).Index(newVersionedIndexName))
                 ), ct);
 
         if (!updateAliasesResponse.IsValidResponse)
         {
             return UnitResult.Failure(updateAliasesResponse.DebugInformation);
+        }
+
+        return UnitResult.Success<string>();
+    }
+
+    public async Task<UnitResult<string>> RemoveOldIndex(string indexName, int? oldVersion, CancellationToken ct)
+    {
+        if(oldVersion is null)
+        {
+            return UnitResult.Success<string>();
+        }
+
+        var oldVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, oldVersion.Value);
+
+        var deleteResponse = await _elasticsearchClient.Indices.DeleteAsync(oldVersionedIndexName, ct);
+        if (!deleteResponse.IsValidResponse)
+        {
+            return UnitResult.Failure(deleteResponse.DebugInformation);
         }
 
         return UnitResult.Success<string>();

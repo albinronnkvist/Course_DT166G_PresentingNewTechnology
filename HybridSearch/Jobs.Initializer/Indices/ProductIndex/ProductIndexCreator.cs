@@ -8,7 +8,7 @@ public class ProductIndexCreator(IIndexManager indexManager) : IProductIndexCrea
 {
     private readonly IIndexManager _indexManager = indexManager;
 
-    public async Task<Result<int, string>> GenerateNextIndexVersion(CancellationToken ct)
+    public async Task<Result<(int? OldVersion, int NewVersion), string>> GenerateNextIndexVersion(CancellationToken ct)
     {
         return await _indexManager.GenerateNextIndexVersion(ProductIndexConstants.IndexName, ct);
     }
@@ -23,8 +23,8 @@ public class ProductIndexCreator(IIndexManager indexManager) : IProductIndexCrea
         return await _indexManager.EnsureHealthyIndex(ProductIndexConstants.IndexName, version, ct);
     }
 
-    public async Task<UnitResult<string>> ReassignSearchAlias(int version, CancellationToken ct)
+    public async Task<UnitResult<string>> ReassignSearchAlias(int? oldVersion, int newVersion, CancellationToken ct)
     {
-        return await _indexManager.ReassignSearchAlias(ProductIndexConstants.IndexName, version, ct);
+        return await _indexManager.ReassignSearchAlias(ProductIndexConstants.IndexName, oldVersion, newVersion, ct);
     }
 }

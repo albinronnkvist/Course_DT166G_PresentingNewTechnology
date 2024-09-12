@@ -30,15 +30,17 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
             return Result.Failure<string, string>(nextIndexVersionResult.Error);
         }
 
+        var (OldVersion, NewVersion) = nextIndexVersionResult.Value;
+
         _logger.LogInformation("Upserting index template...");
-        var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(nextIndexVersionResult.Value, false, ct);
+        var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(NewVersion, false, ct);
         if(preIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(preIndexTemplateResult.Error);
         }
 
         _logger.LogInformation("Creating new index...");
-        var indexCreationResult = await _productIndexCreator.CreateIndex(nextIndexVersionResult.Value,ct);
+        var indexCreationResult = await _productIndexCreator.CreateIndex(NewVersion,ct);
         if(indexCreationResult.IsFailure) 
         {
             return Result.Failure<string, string>(indexCreationResult.Error);
@@ -53,7 +55,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         {
             _logger.LogInformation("Ensuring healthy index (times out after 60 seconds if not healthy)...");
 
-            var ensureHealthyIndexResult = await _productIndexCreator.EnsureHealthyIndex(nextIndexVersionResult.Value, ct);
+            var ensureHealthyIndexResult = await _productIndexCreator.EnsureHealthyIndex(NewVersion, ct);
             if(ensureHealthyIndexResult.IsFailure)
             {
                 return Result.Failure<string, string>(ensureHealthyIndexResult.Error);
@@ -61,7 +63,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         }
 
         _logger.LogInformation("Reassigning search alias to new index...");
-        var reassignSearchAlias = await _productIndexCreator.ReassignSearchAlias(nextIndexVersionResult.Value, ct);
+        var reassignSearchAlias = await _productIndexCreator.ReassignSearchAlias(OldVersion, NewVersion, ct);
         if(reassignSearchAlias.IsFailure)
         {
             return Result.Failure<string, string>(reassignSearchAlias.Error);
@@ -71,7 +73,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         // Delete old indices (previous versions)
 
         _logger.LogInformation("Upserting index template...");
-        var postIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(nextIndexVersionResult.Value, true, ct);
+        var postIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(NewVersion, true, ct);
         if(postIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(postIndexTemplateResult.Error);
