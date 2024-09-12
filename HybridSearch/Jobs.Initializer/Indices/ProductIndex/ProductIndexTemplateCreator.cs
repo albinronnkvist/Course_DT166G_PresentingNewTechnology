@@ -13,9 +13,9 @@ public class ProductIndexTemplateCreator(IOptions<ProductIndexOptions> options,
     private readonly IIndexTemplateManager _indexTemplateManager = indexTemplateManager;
     private readonly ProductIndexOptions _options = options.Value;
 
-    public async Task<UnitResult<string>> CreateIndexTemplate(bool addSearchAlias, CancellationToken ct)
+    public async Task<UnitResult<string>> CreateIndexTemplate(int version, bool addSearchAlias, CancellationToken ct)
     {
-        var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, _options.Version)
+        var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, version)
             .WithCustomMappings(new TypeMapping
             {
                 Properties = GetProperties(_options.EmbeddingDimensions)
