@@ -8,13 +8,11 @@ using Microsoft.Extensions.Options;
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
 public class ProductsInitializer(ILogger<ProductsInitializer> logger,
-    IOptions<ProductIndexOptions> options,
     IProductIndexTemplateCreator productIndexTemplateCreator,
     IProductIndexCreator productIndexCreator,
     IEmbeddingGenerator embeddingGenerator) : IInitializer
 {
     private readonly ILogger<ProductsInitializer> _logger = logger;
-    private readonly ProductIndexOptions _options = options.Value;
     private readonly IProductIndexTemplateCreator _productIndexTemplateCreator = productIndexTemplateCreator;
     private readonly IProductIndexCreator _productIndexCreator = productIndexCreator;
     private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
