@@ -21,49 +21,59 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     {        
         _logger.LogInformation("Starting initialization of products index...");
         
+        _logger.LogInformation("Generating new index version...");
         var nextIndexVersionResult = await _productIndexCreator.GenerateNextIndexVersion(ct);
         if(nextIndexVersionResult.IsFailure)
         {
             return Result.Failure<string, string>(nextIndexVersionResult.Error);
         }
 
+        _logger.LogInformation("Upserting index template...");
         var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(nextIndexVersionResult.Value, false, ct);
         if(preIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(preIndexTemplateResult.Error);
         }
 
+        _logger.LogInformation("Creating new index...");
         var indexCreationResult = await _productIndexCreator.CreateIndex(nextIndexVersionResult.Value,ct);
         if(indexCreationResult.IsFailure) 
         {
             return Result.Failure<string, string>(indexCreationResult.Error);
         }
 
+        _logger.LogInformation("Populating indices (TODO)...");
         //
         // TODO: Populate new indices with documents
         // 
 
+        _logger.LogInformation("Ensuring healthy index (times out after 60 seconds if not healthy)... (Skip for now)");
+        /*
         var ensureHealthyIndexResult = await _productIndexCreator.EnsureHealthyIndex(nextIndexVersionResult.Value, ct);
         if(ensureHealthyIndexResult.IsFailure)
         {
             return Result.Failure<string, string>(ensureHealthyIndexResult.Error);
-        }
+        } 
+        */
 
+        _logger.LogInformation("Reassigning search alias to new index...");
         var reassignSearchAlias = await _productIndexCreator.ReassignSearchAlias(nextIndexVersionResult.Value, ct);
         if(reassignSearchAlias.IsFailure)
         {
             return Result.Failure<string, string>(reassignSearchAlias.Error);
         }
 
+        _logger.LogInformation("Deleting old indices (TODO)...");
         // Delete old indices (previous versions)
 
-        // Update template so new product indices added later are searchable (basically a reset)
+        _logger.LogInformation("Upserting index template...");
         var postIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(nextIndexVersionResult.Value, true, ct);
         if(postIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(postIndexTemplateResult.Error);
         }
 
+        _logger.LogInformation("Done!");
         return Result.Success<string, string>("Success");
 
 
