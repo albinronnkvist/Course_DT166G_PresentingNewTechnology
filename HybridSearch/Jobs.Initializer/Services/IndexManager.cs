@@ -1,6 +1,8 @@
 using AlbinRonnkvist.HybridSearch.Core.Helpers;
 using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Cluster;
+using Elastic.Clients.Elasticsearch.IndexManagement;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
 
@@ -42,6 +44,49 @@ public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManag
         if (!response.IsValidResponse)
         {
             return UnitResult.Failure(response.DebugInformation);
+        }
+
+        return UnitResult.Success<string>();
+    }
+
+    public async Task<UnitResult<string>> EnsureHealthyIndex(string indexName, int version, CancellationToken ct)
+    {
+        var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, version);
+        var healthStatusResponse = await _elasticsearchClient.Cluster.HealthAsync(new HealthRequest(newVersionedIndexName)
+        {
+            WaitForStatus = HealthStatus.Green,
+            Timeout = "60s",
+        }, ct);
+
+        if (!healthStatusResponse.IsValidResponse)
+        {
+            return UnitResult.Failure("Failed to wait for green status: " + healthStatusResponse.DebugInformation);
+        }
+
+        if(healthStatusResponse.Status != HealthStatus.Green)
+        {
+            return UnitResult.Failure("Index is not green: " + healthStatusResponse.Status.ToString());
+        }
+
+        return UnitResult.Success<string>();
+    }
+
+    public async Task<UnitResult<string>> ReassignSearchAlias(string indexName, int version, CancellationToken ct)
+    {
+        var indexNamePattern = IndexNamingConvention.GetTemplatePattern(indexName);
+        var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, version);
+        var searchAlias = IndexNamingConvention.GetSearchAlias(indexName);
+
+        var updateAliasesResponse = await _elasticsearchClient.Indices
+            .UpdateAliasesAsync(a => a
+                .Actions(actions => actions
+                    .Remove(r => r.Alias(searchAlias).Index(indexNamePattern))
+                    .Add<AddAction>(a => a.Alias(searchAlias).Index(newVersionedIndexName))
+                ), ct);
+
+        if (!updateAliasesResponse.IsValidResponse)
+        {
+            return UnitResult.Failure(updateAliasesResponse.DebugInformation);
         }
 
         return UnitResult.Success<string>();

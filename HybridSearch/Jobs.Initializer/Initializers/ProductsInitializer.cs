@@ -29,21 +29,33 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
             return Result.Failure<string, string>(nextIndexVersionResult.Error);
         }
 
-        var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(nextIndexVersionResult.Value,false, ct);
+        var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(nextIndexVersionResult.Value, false, ct);
         if(preIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(preIndexTemplateResult.Error);
         }
 
-        var indexCreationResult = await _productIndexCreator.CreateIndex(ct);
+        var indexCreationResult = await _productIndexCreator.CreateIndex(nextIndexVersionResult.Value,ct);
         if(indexCreationResult.IsFailure) 
         {
             return Result.Failure<string, string>(indexCreationResult.Error);
         }
 
-        // Populate new indices
+        //
+        // TODO: Populate new indices with documents
+        // 
 
-        // Reassign search alias to new indices as soon as new indices are green (create the search alias if it doesn't exist)
+        var ensureHealthyIndexResult = await _productIndexCreator.EnsureHealthyIndex(nextIndexVersionResult.Value, ct);
+        if(ensureHealthyIndexResult.IsFailure)
+        {
+            return Result.Failure<string, string>(ensureHealthyIndexResult.Error);
+        }
+
+        var reassignSearchAlias = await _productIndexCreator.ReassignSearchAlias(nextIndexVersionResult.Value, ct);
+        if(reassignSearchAlias.IsFailure)
+        {
+            return Result.Failure<string, string>(reassignSearchAlias.Error);
+        }
 
         // Delete old indices (previous versions)
 
@@ -55,6 +67,11 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         }
 
         return Result.Success<string, string>("Success");
+
+
+
+
+
 
         // Uncomment to generate an embedding
         /*
