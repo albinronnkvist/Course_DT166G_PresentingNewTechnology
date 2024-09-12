@@ -9,14 +9,14 @@ namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
 public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     IOptions<ProductIndexOptions> options,
-    IProductIndexTemplateCreator productIndexTemplateCreator,
-    IProductIndexCreator productIndexCreator,
+    IProductIndexTemplateManager productIndexTemplateManager,
+    IProductIndexManager productIndexManager,
     IEmbeddingGenerator embeddingGenerator) : IInitializer
 {
     private readonly ILogger<ProductsInitializer> _logger = logger;
     private readonly ProductIndexOptions _options = options.Value;
-    private readonly IProductIndexTemplateCreator _productIndexTemplateCreator = productIndexTemplateCreator;
-    private readonly IProductIndexCreator _productIndexCreator = productIndexCreator;
+    private readonly IProductIndexTemplateManager _productIndexTemplateManager = productIndexTemplateManager;
+    private readonly IProductIndexManager _productIndexManager = productIndexManager;
     private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
 
     public async Task<Result<string, string>> Execute(CancellationToken ct)
@@ -24,7 +24,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         _logger.LogInformation("Starting initialization of products index...");
         
         _logger.LogInformation("Generating new index version...");
-        var nextIndexVersionResult = await _productIndexCreator.GenerateNextIndexVersion(ct);
+        var nextIndexVersionResult = await _productIndexManager.GenerateNextIndexVersion(ct);
         if(nextIndexVersionResult.IsFailure)
         {
             return Result.Failure<string, string>(nextIndexVersionResult.Error);
@@ -33,14 +33,14 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         var (OldVersion, NewVersion) = nextIndexVersionResult.Value;
 
         _logger.LogInformation("Upserting index template...");
-        var preIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(NewVersion, false, ct);
+        var preIndexTemplateResult = await _productIndexTemplateManager.CreateIndexTemplate(NewVersion, false, ct);
         if(preIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(preIndexTemplateResult.Error);
         }
 
         _logger.LogInformation("Creating new index...");
-        var indexCreationResult = await _productIndexCreator.CreateIndex(NewVersion,ct);
+        var indexCreationResult = await _productIndexManager.CreateIndex(NewVersion,ct);
         if(indexCreationResult.IsFailure) 
         {
             return Result.Failure<string, string>(indexCreationResult.Error);
@@ -55,7 +55,7 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         {
             _logger.LogInformation("Ensuring healthy index (times out after 60 seconds if not healthy)...");
 
-            var ensureHealthyIndexResult = await _productIndexCreator.EnsureHealthyIndex(NewVersion, ct);
+            var ensureHealthyIndexResult = await _productIndexManager.EnsureHealthyIndex(NewVersion, ct);
             if(ensureHealthyIndexResult.IsFailure)
             {
                 return Result.Failure<string, string>(ensureHealthyIndexResult.Error);
@@ -63,28 +63,27 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         }
 
         _logger.LogInformation("Reassigning search alias to new index...");
-        var reassignSearchAlias = await _productIndexCreator.ReassignSearchAlias(OldVersion, NewVersion, ct);
+        var reassignSearchAlias = await _productIndexManager.ReassignSearchAlias(OldVersion, NewVersion, ct);
         if(reassignSearchAlias.IsFailure)
         {
             return Result.Failure<string, string>(reassignSearchAlias.Error);
         }
 
         _logger.LogInformation("Deleting old indices...");
-        var removeResult = await _productIndexCreator.RemoveOldIndex(OldVersion, ct);
+        var removeResult = await _productIndexManager.RemoveOldIndex(OldVersion, ct);
         if(removeResult.IsFailure)
         {
             return Result.Failure<string, string>(removeResult.Error);
         }
 
         _logger.LogInformation("Upserting index template...");
-        var postIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(NewVersion, true, ct);
+        var postIndexTemplateResult = await _productIndexTemplateManager.CreateIndexTemplate(NewVersion, true, ct);
         if(postIndexTemplateResult.IsFailure)
         {
             return Result.Failure<string, string>(postIndexTemplateResult.Error);
         }
 
-        _logger.LogInformation("Done!");
-        return Result.Success<string, string>("Success");
+        return Result.Success<string, string>("Product index initialized successfully");
 
 
 

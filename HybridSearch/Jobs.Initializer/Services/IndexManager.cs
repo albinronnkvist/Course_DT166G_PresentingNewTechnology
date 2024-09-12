@@ -36,10 +36,10 @@ public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManag
         return CSharpFunctionalExtensions.Result.Success<(int? OldVersion, int NewVersion), string>((versionResult.Value, versionResult.Value + 1));
     }
     
-    public async Task<UnitResult<string>> CreateIndex(string indexName, int version, CancellationToken ct)
+    public async Task<UnitResult<string>> CreateIndex(string indexName, int newVersion, CancellationToken ct)
     {
         var response = await _elasticsearchClient.Indices
-            .CreateAsync(IndexNamingConvention.GetVersionedIndexName(indexName, version), ct);
+            .CreateAsync(IndexNamingConvention.GetVersionedIndexName(indexName, newVersion), ct);
 
         if (!response.IsValidResponse)
         {
@@ -49,9 +49,9 @@ public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManag
         return UnitResult.Success<string>();
     }
 
-    public async Task<UnitResult<string>> EnsureHealthyIndex(string indexName, int version, CancellationToken ct)
+    public async Task<UnitResult<string>> EnsureHealthyIndex(string indexName, int newVersion, CancellationToken ct)
     {
-        var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, version);
+        var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(indexName, newVersion);
         var healthStatusResponse = await _elasticsearchClient.Cluster.HealthAsync(new HealthRequest(newVersionedIndexName)
         {
             WaitForStatus = HealthStatus.Green,

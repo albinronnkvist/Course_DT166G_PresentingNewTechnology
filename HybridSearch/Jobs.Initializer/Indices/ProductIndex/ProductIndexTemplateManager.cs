@@ -7,15 +7,15 @@ using Microsoft.Extensions.Options;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
-public class ProductIndexTemplateCreator(IOptions<ProductIndexOptions> options,
-    IIndexTemplateManager indexTemplateManager) : IProductIndexTemplateCreator
+public class ProductIndexTemplateManager(IOptions<ProductIndexOptions> options,
+    IIndexTemplateManager indexTemplateManager) : IProductIndexTemplateManager
 {
     private readonly IIndexTemplateManager _indexTemplateManager = indexTemplateManager;
     private readonly ProductIndexOptions _options = options.Value;
 
-    public async Task<UnitResult<string>> CreateIndexTemplate(int version, bool addSearchAlias, CancellationToken ct)
+    public async Task<UnitResult<string>> CreateIndexTemplate(int newVersion, bool addSearchAlias, CancellationToken ct)
     {
-        var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, version)
+        var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, newVersion)
             .WithCustomMappings(new TypeMapping
             {
                 Properties = GetProperties(_options.EmbeddingDimensions)

@@ -1,13 +1,8 @@
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
 
-public class InitializerFactory : IInitializerFactory
+public class InitializerFactory(IServiceProvider serviceProvider) : IInitializerFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public InitializerFactory(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public IEnumerable<IInitializer> CreateInitializers()
     {

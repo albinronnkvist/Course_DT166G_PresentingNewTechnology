@@ -4,7 +4,7 @@ using CSharpFunctionalExtensions;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
-public class ProductIndexCreator(IIndexManager indexManager) : IProductIndexCreator
+public class ProductIndexManager(IIndexManager indexManager) : IProductIndexManager
 {
     private readonly IIndexManager _indexManager = indexManager;
 
@@ -13,14 +13,14 @@ public class ProductIndexCreator(IIndexManager indexManager) : IProductIndexCrea
         return await _indexManager.GenerateNextIndexVersion(ProductIndexConstants.IndexName, ct);
     }
 
-    public async Task<UnitResult<string>> CreateIndex(int version, CancellationToken ct)
+    public async Task<UnitResult<string>> CreateIndex(int newVersion, CancellationToken ct)
     {
-        return await _indexManager.CreateIndex(ProductIndexConstants.IndexName, version, ct);
+        return await _indexManager.CreateIndex(ProductIndexConstants.IndexName, newVersion, ct);
     }
 
-    public async Task<UnitResult<string>> EnsureHealthyIndex(int version, CancellationToken ct)
+    public async Task<UnitResult<string>> EnsureHealthyIndex(int newVersion, CancellationToken ct)
     {
-        return await _indexManager.EnsureHealthyIndex(ProductIndexConstants.IndexName, version, ct);
+        return await _indexManager.EnsureHealthyIndex(ProductIndexConstants.IndexName, newVersion, ct);
     }
 
     public async Task<UnitResult<string>> ReassignSearchAlias(int? oldVersion, int newVersion, CancellationToken ct)
