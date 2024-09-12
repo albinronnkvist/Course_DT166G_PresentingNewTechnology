@@ -40,6 +40,26 @@ Add your Open AI credentials to _secrets.json_ in the `Jobs.Initializer` project
     - cd into the `Jobs.Initializer` project
     - Run: `dotnet run`. 
 
+### Search in Kibana
+
+- Execute a regular alias search: 
+    ```bash
+    GET /sa-product/_search
+    ```
+
+- Execute a A k-nearest neighbor (kNN) search ([read more](https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html)):
+    ```bash
+    POST /sa-product/_search
+    {
+        "size": 10,
+        "knn": {
+            "field": "titleEmbedding", 
+            "query_vector": [], // Insert an embedding between the square brackets
+            "k": 10,
+            "num_candidates": 100
+        }
+    }
+    ```
 
 # Contribute
 
