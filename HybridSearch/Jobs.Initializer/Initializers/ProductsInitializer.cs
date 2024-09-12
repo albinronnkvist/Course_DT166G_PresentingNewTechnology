@@ -1,4 +1,3 @@
-using AlbinRonnkvist.HybridSearch.Embedding.Services;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
@@ -11,13 +10,13 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     IOptions<ProductIndexOptions> options,
     IProductIndexTemplateManager productIndexTemplateManager,
     IProductIndexManager productIndexManager,
-    IEmbeddingGenerator embeddingGenerator) : IInitializer
+    IProductIndexDocumentManager productIndexDocumentManager) : IInitializer
 {
     private readonly ILogger<ProductsInitializer> _logger = logger;
     private readonly ProductIndexOptions _options = options.Value;
     private readonly IProductIndexTemplateManager _productIndexTemplateManager = productIndexTemplateManager;
     private readonly IProductIndexManager _productIndexManager = productIndexManager;
-    private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
+    private readonly IProductIndexDocumentManager _productIndexDocumentManager = productIndexDocumentManager;
 
     public async Task<Result<string, string>> Execute(CancellationToken ct)
     {        
@@ -46,10 +45,12 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
             return Result.Failure<string, string>(indexCreationResult.Error);
         }
 
-        _logger.LogInformation("Populating indices (TODO)...");
-        //
-        // TODO: Populate new indices with documents
-        // 
+        _logger.LogInformation("Populating indices...");
+        var createDocumentsResult = await _productIndexDocumentManager.CreateDocuments(NewVersion, ct);
+        if(createDocumentsResult.IsFailure)
+        {
+            return Result.Failure<string, string>(createDocumentsResult.Error);
+        }
 
         if(_options.WaitForGreenHealth)
         {
@@ -84,22 +85,5 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
         }
 
         return Result.Success<string, string>("Product index initialized successfully");
-
-
-
-
-
-
-        // Uncomment to generate an embedding
-        /*
-        var restult = await _embeddingGenerator.GenerateEmbedding("test", _options.EmbeddingDimensions);
-        if(restult.IsSuccess)
-        {
-            _logger.LogInformation("Embedding generated: {Embedding}", restult.Value);
-        }
-        else
-        {
-            _logger.LogError("Failed to generate embedding: {Error}", restult.Error);
-        } */
     }
 }
