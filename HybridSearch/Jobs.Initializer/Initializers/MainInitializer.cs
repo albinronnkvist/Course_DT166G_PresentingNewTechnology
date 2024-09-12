@@ -1,15 +1,9 @@
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
 
-public class MainInitializer
+public class MainInitializer(IInitializerFactory initializerFactory, ILogger<MainInitializer> logger)
 {
-    private readonly IInitializerFactory _initializerFactory;
-    private readonly ILogger<MainInitializer> _logger;
-
-    public MainInitializer(IInitializerFactory initializerFactory, ILogger<MainInitializer> logger)
-    {
-        _initializerFactory = initializerFactory;
-        _logger = logger;
-    }
+    private readonly IInitializerFactory _initializerFactory = initializerFactory;
+    private readonly ILogger<MainInitializer> _logger = logger;
 
     public async Task ExecuteAllInitializersAsync(CancellationToken ct)
     {

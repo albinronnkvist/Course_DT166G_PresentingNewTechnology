@@ -7,26 +7,21 @@ using Microsoft.Extensions.Options;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 
-public class ProductIndexTemplateCreator : IProductIndexTemplateCreator
+public class ProductIndexTemplateManager(IOptions<ProductIndexOptions> options,
+    IIndexTemplateManager indexTemplateManager) : IProductIndexTemplateManager
 {
-    private readonly IIndexTemplateManager _indexTemplateManager;
-    private readonly ProductIndexOptions _options;
+    private readonly IIndexTemplateManager _indexTemplateManager = indexTemplateManager;
+    private readonly ProductIndexOptions _options = options.Value;
 
-    public ProductIndexTemplateCreator(IOptions<ProductIndexOptions> options, IIndexTemplateManager indexTemplateManager)
+    public async Task<UnitResult<string>> CreateIndexTemplate(int newVersion, bool addSearchAlias, CancellationToken ct)
     {
-        _options = options.Value;
-        _indexTemplateManager = indexTemplateManager;
-    }
-
-    public async Task<UnitResult<string>> CreateIndexTemplate(CancellationToken ct)
-    {
-        var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, _options.Version)
+        var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, newVersion)
             .WithCustomMappings(new TypeMapping
             {
                 Properties = GetProperties(_options.EmbeddingDimensions)
             });
 
-        if (_options.AddSearchAlias)
+        if (addSearchAlias)
         {
             request.WithSearchAlias();
         }
