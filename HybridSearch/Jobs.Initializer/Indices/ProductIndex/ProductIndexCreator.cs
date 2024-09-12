@@ -27,4 +27,9 @@ public class ProductIndexCreator(IIndexManager indexManager) : IProductIndexCrea
     {
         return await _indexManager.ReassignSearchAlias(ProductIndexConstants.IndexName, oldVersion, newVersion, ct);
     }
+
+    public async Task<UnitResult<string>> RemoveOldIndex(int? oldVersion, CancellationToken ct)
+    {
+        return await _indexManager.RemoveOldIndex(ProductIndexConstants.IndexName, oldVersion, ct);
+    }
 }

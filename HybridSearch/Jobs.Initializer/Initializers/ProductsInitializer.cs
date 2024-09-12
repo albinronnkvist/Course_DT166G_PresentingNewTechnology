@@ -69,8 +69,12 @@ public class ProductsInitializer(ILogger<ProductsInitializer> logger,
             return Result.Failure<string, string>(reassignSearchAlias.Error);
         }
 
-        _logger.LogInformation("Deleting old indices (TODO)...");
-        // Delete old indices (previous versions)
+        _logger.LogInformation("Deleting old indices...");
+        var removeResult = await _productIndexCreator.RemoveOldIndex(OldVersion, ct);
+        if(removeResult.IsFailure)
+        {
+            return Result.Failure<string, string>(removeResult.Error);
+        }
 
         _logger.LogInformation("Upserting index template...");
         var postIndexTemplateResult = await _productIndexTemplateCreator.CreateIndexTemplate(NewVersion, true, ct);

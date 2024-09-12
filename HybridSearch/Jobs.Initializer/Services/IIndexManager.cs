@@ -8,4 +8,5 @@ public interface IIndexManager
     Task<UnitResult<string>> CreateIndex(string indexName, int version, CancellationToken ct);
     Task<UnitResult<string>> EnsureHealthyIndex(string indexName, int version, CancellationToken ct);
     Task<UnitResult<string>> ReassignSearchAlias(string indexName, int? oldVersion, int newVersion, CancellationToken ct);
+    Task<UnitResult<string>> RemoveOldIndex(string indexName, int? oldVersion, CancellationToken ct);
 }

@@ -8,4 +8,5 @@ public interface IProductIndexCreator
     Task<UnitResult<string>> CreateIndex(int version, CancellationToken ct);
     Task<UnitResult<string>> EnsureHealthyIndex(int version, CancellationToken ct);
     Task<UnitResult<string>> ReassignSearchAlias(int? oldVersion, int newVersion, CancellationToken ct);
+    Task<UnitResult<string>> RemoveOldIndex(int? oldVersion, CancellationToken ct);
 }
