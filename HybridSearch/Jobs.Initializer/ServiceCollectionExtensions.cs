@@ -4,6 +4,7 @@ using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+using AlbinRonnkvist.HybridSearch.Core.Models;
 
 namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
 
@@ -45,12 +46,14 @@ public static class ServiceCollectionExtensions
         services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
         services.AddTransient<IProductIndexTemplateManager, ProductIndexTemplateManager>();
         services.AddTransient<IProductIndexManager, ProductIndexManager>();
+        services.AddScoped<IProductIndexDocumentManager, ProductIndexDocumentManager>();
     }
 
     private static void ConfigureCustomServices(this IServiceCollection services)
     {
         services.AddTransient<IIndexTemplateManager, IndexTemplateManager>();
         services.AddTransient<IIndexManager, IndexManager>();
+        services.AddScoped<IDocumentManager<Product>, DocumentManager<Product>>();
     }
 
 }
