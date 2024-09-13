@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.Initializer", "Jobs.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Embedding", "Embedding\Embedding.csproj", "{D33861FC-2E75-44D2-A676-BEA07295C915}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{DAEBFD51-0F3B-4572-AC10-D893D1B192AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api", "AlbinRonnkvist.HybridSearch.Api\AlbinRonnkvist.HybridSearch.Api.csproj", "{DAEBFD51-0F3B-4572-AC10-D893D1B192AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Tests", "Api.Tests\Api.Tests.csproj", "{78EAF1B3-CF22-4A68-BE16-6EF6460EC2EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api.Tests", "AlbinRonnkvist.HybridSearch.Api.Tests\AlbinRonnkvist.HybridSearch.Api.Tests.csproj", "{78EAF1B3-CF22-4A68-BE16-6EF6460EC2EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
