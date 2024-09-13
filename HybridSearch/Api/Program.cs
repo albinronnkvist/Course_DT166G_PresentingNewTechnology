@@ -3,8 +3,6 @@ using AlbinRonnkvist.HybridSearch.Embedding;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.ConfigureApiProject(builder.Configuration, builder.Environment);
 builder.Services.ConfigureEmbeddingProject(builder.Configuration);
 
@@ -15,7 +13,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else {
+    app.UseHttpsRedirection();    
+}
 
-app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
