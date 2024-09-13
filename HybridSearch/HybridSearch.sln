@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.Initializer", "Jobs.Initializer\Jobs.Initializer.csproj", "{F5343BCB-AA84-4170-9481-4E658145F4FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Embedding", "Embedding\Embedding.csproj", "{D33861FC-2E75-44D2-A676-BEA07295C915}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Embedding", "AlbinRonnkvist.HybridSearch.Embedding\AlbinRonnkvist.HybridSearch.Embedding.csproj", "{D33861FC-2E75-44D2-A676-BEA07295C915}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api", "AlbinRonnkvist.HybridSearch.Api\AlbinRonnkvist.HybridSearch.Api.csproj", "{DAEBFD51-0F3B-4572-AC10-D893D1B192AC}"
 EndProject

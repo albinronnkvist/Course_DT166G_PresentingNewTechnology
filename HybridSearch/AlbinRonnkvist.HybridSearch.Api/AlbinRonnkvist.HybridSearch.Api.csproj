@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AlbinRonnkvist.HybridSearch.Core\AlbinRonnkvist.HybridSearch.Core.csproj" />
-    <ProjectReference Include="..\Embedding\Embedding.csproj" />
+    <ProjectReference Include="..\AlbinRonnkvist.HybridSearch.Embedding\AlbinRonnkvist.HybridSearch.Embedding.csproj" />
   </ItemGroup>
 
   <ItemGroup>
