@@ -9,18 +9,34 @@ internal static partial class ProductSearchValidator
     {
         if (string.IsNullOrWhiteSpace(query))
         {
-            return UnitResult.Failure<string>("No query provided");
+            return UnitResult.Failure("No query provided");
         }
 
-        var allowedCharactersRegex = MyRegex();
+        var allowedCharactersRegex = AllowedCharactersRegex();
         if(!allowedCharactersRegex.IsMatch(query))
         {
-            return UnitResult.Failure<string>("Query contains invalid characters");
+            return UnitResult.Failure("Query contains invalid characters");
         }
 
         return UnitResult.Success<string>();
     }
 
+    internal static string SanitizeQuery(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return string.Empty;
+        }
+
+        var disAllowedCharactersRegex = DisallowedCharactersRegex();
+        var sanitizedQuery = disAllowedCharactersRegex.Replace(query, " ");
+
+        return sanitizedQuery;
+    }
+
     [GeneratedRegex(@"^[a-zA-Z0-9\s\-_\.\""'']+$", RegexOptions.Compiled)]
-    private static partial Regex MyRegex();
+    private static partial Regex AllowedCharactersRegex();
+
+    [GeneratedRegex(@"[^a-zA-Z0-9\s\-_\.\""'']+", RegexOptions.Compiled)]
+    private static partial Regex DisallowedCharactersRegex();
 }
