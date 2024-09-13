@@ -15,11 +15,9 @@ public class ProductsController : ControllerBase
     {
         await Task.CompletedTask;
         
-        var validationResult = ProductSearchValidator.IsValid(query);
-        if (validationResult.IsFailure)
-        {
-            return BadRequest(validationResult.Error);
-        }
+        var sanitizedQuery = ProductSearchValidator.SanitizeQuery(query);
+        
+        // TODO: Pass sanitized query a searcher service
 
         var response = new ProductSearchResponse
         {
