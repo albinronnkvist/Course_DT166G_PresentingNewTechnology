@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\AlbinRonnkvist.HybridSearch.Core\AlbinRonnkvist.HybridSearch.Core.csproj" />
   </ItemGroup>
 
 </Project>
