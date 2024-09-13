@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using AlbinRonnkvist.HybridSearch.Core.Models;
 using CSharpFunctionalExtensions;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 
 public interface IProductIndexDocumentManager
 {

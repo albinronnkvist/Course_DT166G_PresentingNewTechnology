@@ -3,7 +3,7 @@ using AlbinRonnkvist.HybridSearch.Core.Helpers;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Services.IndexTemplates;
 
 public class PutIndexTemplateRequestBuilder
 {

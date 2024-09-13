@@ -1,4 +1,4 @@
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Initializers;
 
 public interface IInitializerFactory
 {

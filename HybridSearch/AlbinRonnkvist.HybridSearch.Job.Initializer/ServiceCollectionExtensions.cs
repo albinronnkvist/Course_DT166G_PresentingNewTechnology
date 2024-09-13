@@ -1,12 +1,12 @@
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Options;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Services.IndexTemplates;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 using AlbinRonnkvist.HybridSearch.Core.Models;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer;
 
 public static class ServiceCollectionExtensions
 {

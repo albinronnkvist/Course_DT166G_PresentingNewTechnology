@@ -1,10 +1,10 @@
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Initializers;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Options;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Options;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer;
 
 public class ProductsInitializer(ILogger<ProductsInitializer> logger,
     IOptions<ProductIndexOptions> options,

@@ -4,12 +4,12 @@ using AlbinRonnkvist.HybridSearch.Core.Constants;
 using AlbinRonnkvist.HybridSearch.Core.Helpers;
 using AlbinRonnkvist.HybridSearch.Core.Models;
 using AlbinRonnkvist.HybridSearch.Embedding.Services;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Options;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Options;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 
 public class ProductIndexDocumentManager : IProductIndexDocumentManager
 {

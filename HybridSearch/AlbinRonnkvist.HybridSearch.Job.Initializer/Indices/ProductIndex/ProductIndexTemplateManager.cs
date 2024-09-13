@@ -1,11 +1,11 @@
 using AlbinRonnkvist.HybridSearch.Core.Constants;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Options;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Services.IndexTemplates;
 using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Options;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 
 public class ProductIndexTemplateManager(IOptions<ProductIndexOptions> options,
     IIndexTemplateManager indexTemplateManager) : IProductIndexTemplateManager

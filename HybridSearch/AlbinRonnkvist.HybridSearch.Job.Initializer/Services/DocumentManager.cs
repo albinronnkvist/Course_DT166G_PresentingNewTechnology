@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 
 public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class
 {

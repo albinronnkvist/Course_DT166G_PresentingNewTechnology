@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services.IndexTemplates;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Services.IndexTemplates;
 
 public class IndexTemplateManager(ElasticsearchClient elasticsearchClient) : IIndexTemplateManager
 {

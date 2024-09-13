@@ -1,4 +1,4 @@
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Options;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Options;
 
 public record ElasticsearchOptions
 {

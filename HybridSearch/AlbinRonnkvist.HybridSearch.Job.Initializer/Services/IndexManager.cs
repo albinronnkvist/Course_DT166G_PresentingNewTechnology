@@ -4,7 +4,7 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Cluster;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 
 public class IndexManager(ElasticsearchClient elasticsearchClient) : IIndexManager
 {

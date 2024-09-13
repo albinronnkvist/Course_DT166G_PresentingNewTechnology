@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 
 public interface IIndexManager
 {

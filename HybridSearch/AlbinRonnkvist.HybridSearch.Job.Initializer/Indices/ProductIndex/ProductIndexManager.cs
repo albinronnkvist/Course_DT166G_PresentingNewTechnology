@@ -1,8 +1,8 @@
 using AlbinRonnkvist.HybridSearch.Core.Constants;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 using CSharpFunctionalExtensions;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Indices.ProductIndex;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 
 public class ProductIndexManager(IIndexManager indexManager) : IProductIndexManager
 {

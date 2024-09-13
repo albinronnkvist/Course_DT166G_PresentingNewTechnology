@@ -1,6 +1,6 @@
 using AlbinRonnkvist.HybridSearch.Embedding;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer;
-using AlbinRonnkvist.HybridSearch.Jobs.Initializer.Initializers;
+using AlbinRonnkvist.HybridSearch.Job.Initializer;
+using AlbinRonnkvist.HybridSearch.Job.Initializer.Initializers;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.ConfigureJobsInitializerProject(builder.Configuration, builder.Environment);

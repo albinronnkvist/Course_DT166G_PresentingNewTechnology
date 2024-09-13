@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using CSharpFunctionalExtensions;
 
-namespace AlbinRonnkvist.HybridSearch.Jobs.Initializer.Services;
+namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Services;
 
 public interface IDocumentManager<TDocument> where TDocument : class
 {
