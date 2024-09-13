@@ -3,9 +3,9 @@ using Microsoft.OpenApi.Models;
 
 namespace AlbinRonnkvist.HybridSearch.Api;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    public static void ConfigureApiProject(this IServiceCollection services,
+    internal static void ConfigureApiProject(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment environment) 
     {
         services.ConfigureSwagger(configuration, environment);
@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        
+
         if (environment.IsDevelopment())
         {
             services.AddSwaggerGen(s =>

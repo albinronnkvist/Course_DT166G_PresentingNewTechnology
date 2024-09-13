@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Embedding\Embedding.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="AlbinRonnkvist.HybridSearch.Api.Tests" />
+  </ItemGroup>
+
 </Project>
