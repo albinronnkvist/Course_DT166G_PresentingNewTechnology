@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{B6FAAB64-31B4-4EB7-9F13-6AFD916246C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Core", "AlbinRonnkvist.HybridSearch.Core\AlbinRonnkvist.HybridSearch.Core.csproj", "{B6FAAB64-31B4-4EB7-9F13-6AFD916246C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{C7F2D807-55FE-4D95-A0D3-F2B945D58500}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Core.Tests", "AlbinRonnkvist.HybridSearch.Core.Tests\AlbinRonnkvist.HybridSearch.Core.Tests.csproj", "{C7F2D807-55FE-4D95-A0D3-F2B945D58500}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.Initializer", "Jobs.Initializer\Jobs.Initializer.csproj", "{F5343BCB-AA84-4170-9481-4E658145F4FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Job.Initializer", "AlbinRonnkvist.HybridSearch.Job.Initializer\AlbinRonnkvist.HybridSearch.Job.Initializer.csproj", "{F5343BCB-AA84-4170-9481-4E658145F4FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Embedding", "Embedding\Embedding.csproj", "{D33861FC-2E75-44D2-A676-BEA07295C915}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Embedding", "AlbinRonnkvist.HybridSearch.Embedding\AlbinRonnkvist.HybridSearch.Embedding.csproj", "{D33861FC-2E75-44D2-A676-BEA07295C915}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{DAEBFD51-0F3B-4572-AC10-D893D1B192AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api", "AlbinRonnkvist.HybridSearch.Api\AlbinRonnkvist.HybridSearch.Api.csproj", "{DAEBFD51-0F3B-4572-AC10-D893D1B192AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Tests", "Api.Tests\Api.Tests.csproj", "{78EAF1B3-CF22-4A68-BE16-6EF6460EC2EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api.Tests", "AlbinRonnkvist.HybridSearch.Api.Tests\AlbinRonnkvist.HybridSearch.Api.Tests.csproj", "{78EAF1B3-CF22-4A68-BE16-6EF6460EC2EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
