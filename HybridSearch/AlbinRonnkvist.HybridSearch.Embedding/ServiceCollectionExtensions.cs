@@ -14,7 +14,9 @@ public static class ServiceCollectionExtensions
 {
     public static void ConfigureEmbeddingProject(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<OpenAiEmbeddingApiOptions>(configuration.GetSection(nameof(OpenAiEmbeddingApiOptions)));
+        services.AddOptionsWithValidateOnStart<OpenAiEmbeddingApiOptions, OpenAiEmbeddingApiOptionsValidator>(configuration
+            .GetSection(nameof(OpenAiEmbeddingApiOptions)).Path);
+
         services.AddTransient<IEmbeddingGenerator, OpenAiEmbeddingGenerator>();
         services.AddHttpClient<IEmbeddingApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>, OpenAiApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>>((serviceProvider, httpClient) => {
             var openAiEmbeddingApiOptions = serviceProvider.GetRequiredService<IOptions<OpenAiEmbeddingApiOptions>>().Value;
