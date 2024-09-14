@@ -20,9 +20,13 @@ internal static class ServiceCollectionExtensions
 
     private static void ConfigureElasticsearch(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
-        var elasticsearchOptions = configuration.GetSection(nameof(ElasticsearchOptions))
-            .Get<ElasticsearchOptions>() ?? throw new ArgumentNullException(nameof(ElasticsearchOptions), "Elasticsearch options are not configured properly");
+        services.AddOptionsWithValidateOnStart<ElasticsearchOptions, ElasticsearchOptionsValidator>(configuration
+            .GetSection(nameof(ElasticsearchOptions)).Path);
 
+        var elasticsearchOptions = configuration.
+            GetSection(nameof(ElasticsearchOptions))
+            .Get<ElasticsearchOptions>() ?? throw new InvalidOperationException("ElasticsearchOptions is not configured properly.");
+        
         var elasticSearchSettings = ConfigureElasticsearchSettings(environment, elasticsearchOptions);
 
         services.AddSingleton(new ElasticsearchClient(elasticSearchSettings));
@@ -43,7 +47,9 @@ internal static class ServiceCollectionExtensions
 
     private static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
+        services.AddOptionsWithValidateOnStart<ProductIndexOptions, ProductIndexOptionsValidator>(configuration
+            .GetSection(nameof(ProductIndexOptions)).Path);
+
         services.AddTransient<IProductIndexTemplateManager, ProductIndexTemplateManager>();
         services.AddTransient<IProductIndexManager, ProductIndexManager>();
         services.AddScoped<IProductIndexDocumentManager, ProductIndexDocumentManager>();
