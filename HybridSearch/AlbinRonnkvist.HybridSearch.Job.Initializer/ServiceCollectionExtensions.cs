@@ -8,9 +8,9 @@ using AlbinRonnkvist.HybridSearch.Core.Models;
 
 namespace AlbinRonnkvist.HybridSearch.Job.Initializer;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    public static void ConfigureJobsInitializerProject(this IServiceCollection services,
+    internal static void ConfigureJobsInitializerProject(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment environment) 
     {
         services.ConfigureElasticsearch(configuration, environment);
@@ -20,9 +20,13 @@ public static class ServiceCollectionExtensions
 
     private static void ConfigureElasticsearch(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
-        var elasticsearchOptions = configuration.GetSection(nameof(ElasticsearchOptions))
-            .Get<ElasticsearchOptions>() ?? throw new ArgumentNullException(nameof(ElasticsearchOptions), "Elasticsearch options are not configured properly");
+        services.Configure<ElasticsearchOptions>(configuration.GetSection(nameof(ElasticsearchOptions)));
+        services.AddOptionsWithValidateOnStart<ElasticsearchOptions, ElasticsearchOptionsValidator>(nameof(ElasticsearchOptions));
 
+        var elasticsearchOptions = configuration.
+            GetSection(nameof(ElasticsearchOptions))
+            .Get<ElasticsearchOptions>() ?? throw new InvalidOperationException("ElasticsearchOptions is not configured properly.");
+        
         var elasticSearchSettings = ConfigureElasticsearchSettings(environment, elasticsearchOptions);
 
         services.AddSingleton(new ElasticsearchClient(elasticSearchSettings));
@@ -44,6 +48,8 @@ public static class ServiceCollectionExtensions
     private static void ConfigureIndices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ProductIndexOptions>(configuration.GetSection(nameof(ProductIndexOptions)));
+        services.AddOptionsWithValidateOnStart<ProductIndexOptions, ProductIndexOptionsValidator>(nameof(ProductIndexOptions));
+
         services.AddTransient<IProductIndexTemplateManager, ProductIndexTemplateManager>();
         services.AddTransient<IProductIndexManager, ProductIndexManager>();
         services.AddScoped<IProductIndexDocumentManager, ProductIndexDocumentManager>();
