@@ -2,7 +2,6 @@ namespace AlbinRonnkvist.HybridSearch.Embedding.ApiClients;
 
 using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
-using Microsoft.Extensions.Logging;
 
 public class OpenAiApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>(HttpClient httpClient) : IEmbeddingApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>
 {
