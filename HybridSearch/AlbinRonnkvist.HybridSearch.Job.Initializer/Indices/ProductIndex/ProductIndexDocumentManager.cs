@@ -11,21 +11,14 @@ using Microsoft.Extensions.Options;
 
 namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 
-public class ProductIndexDocumentManager : IProductIndexDocumentManager
+public class ProductIndexDocumentManager(IDocumentManager<Product> documentManager,
+    IEmbeddingGenerator embeddingGenerator,
+    IOptions<ProductIndexOptions> options) : IProductIndexDocumentManager
 {
-    private readonly IDocumentManager<Product> _documentManager;
-    private readonly IEmbeddingGenerator _embeddingGenerator;
-    private readonly ProductIndexOptions _options;
+    private readonly IDocumentManager<Product> _documentManager = documentManager;
+    private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
+    private readonly ProductIndexOptions _options = options.Value;
 
-    public ProductIndexDocumentManager(IDocumentManager<Product> documentManager,
-        IEmbeddingGenerator embeddingGenerator,
-        IOptions<ProductIndexOptions> options)
-    {
-        _documentManager = documentManager;
-        _embeddingGenerator = embeddingGenerator;
-        _options = options.Value;
-    }
-    
     public async Task<UnitResult<string>> CreateDocuments(int newVersion, CancellationToken ct)
     {
         var newVersionedIndexName = IndexNamingConvention.GetVersionedIndexName(ProductIndexConstants.IndexName, newVersion);
@@ -52,31 +45,31 @@ public class ProductIndexDocumentManager : IProductIndexDocumentManager
     }
 
     // Temp solution
-    private async Task<CSharpFunctionalExtensions.Result<string, string>> ExtractData()
+    private static async Task<Result<string, string>> ExtractData()
     {
         var baseDirectory = AppContext.BaseDirectory;
         var filePath = Path.Combine(baseDirectory, "Indices", "ProductIndex", "products-example.json");        
         if (!File.Exists(filePath))
         {
-            return CSharpFunctionalExtensions.Result.Failure<string, string>("File not found: " + filePath);
+            return Result.Failure<string, string>("File not found: " + filePath);
         }
 
         var jsonData = await File.ReadAllTextAsync(filePath);
 
-        return CSharpFunctionalExtensions.Result.Success<string, string>(jsonData);
+        return Result.Success<string, string>(jsonData);
     }
 
-    private async Task<CSharpFunctionalExtensions.Result<ReadOnlyCollection<Product>, string>> TransformData(string extractedData)
+    private async Task<Result<ReadOnlyCollection<Product>, string>> TransformData(string extractedData)
     {
         if(string.IsNullOrWhiteSpace(extractedData))
         {
-            return CSharpFunctionalExtensions.Result.Failure<ReadOnlyCollection<Product>, string>("No data provided");
+            return Result.Failure<ReadOnlyCollection<Product>, string>("No data provided");
         }
 
         var productDtos = JsonSerializer.Deserialize<List<ProductDto>>(extractedData);
-        if (productDtos is null || !productDtos.Any()) 
+        if (productDtos is null || productDtos.Count is 0) 
         {
-            return CSharpFunctionalExtensions.Result.Failure<ReadOnlyCollection<Product>, string>("Failed to deserialize products");
+            return Result.Failure<ReadOnlyCollection<Product>, string>("Failed to deserialize products");
         }
 
         var products = new List<Product>();
@@ -85,7 +78,7 @@ public class ProductIndexDocumentManager : IProductIndexDocumentManager
             var embedding = await _embeddingGenerator.GenerateEmbedding(product.Title, _options.EmbeddingDimensions);
             if (embedding.IsFailure)
             {
-                return CSharpFunctionalExtensions.Result.Failure<ReadOnlyCollection<Product>, string>("Failed to generate embedding for product: " + product.Title);
+                return Result.Failure<ReadOnlyCollection<Product>, string>("Failed to generate embedding for product: " + product.Title);
             }
 
             products.Add(new Product
@@ -96,6 +89,6 @@ public class ProductIndexDocumentManager : IProductIndexDocumentManager
             });
         }
 
-        return CSharpFunctionalExtensions.Result.Success<ReadOnlyCollection<Product>, string>(products.AsReadOnly());
+        return Result.Success<ReadOnlyCollection<Product>, string>(products.AsReadOnly());
     }
 }

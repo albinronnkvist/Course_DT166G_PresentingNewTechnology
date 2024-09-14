@@ -8,9 +8,9 @@ using AlbinRonnkvist.HybridSearch.Core.Models;
 
 namespace AlbinRonnkvist.HybridSearch.Job.Initializer;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    public static void ConfigureJobsInitializerProject(this IServiceCollection services,
+    internal static void ConfigureJobsInitializerProject(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment environment) 
     {
         services.ConfigureElasticsearch(configuration, environment);
