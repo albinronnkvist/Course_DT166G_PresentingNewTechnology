@@ -4,7 +4,6 @@ using AlbinRonnkvist.HybridSearch.Embedding.Options;
 using AlbinRonnkvist.HybridSearch.Embedding.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 
@@ -19,7 +18,9 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<IEmbeddingGenerator, OpenAiEmbeddingGenerator>();
         services.AddHttpClient<IEmbeddingApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>, OpenAiApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>>((serviceProvider, httpClient) => {
-            var openAiEmbeddingApiOptions = serviceProvider.GetRequiredService<IOptions<OpenAiEmbeddingApiOptions>>().Value;
+            var openAiEmbeddingApiOptions = configuration.
+                GetSection(nameof(OpenAiEmbeddingApiOptions))
+                .Get<OpenAiEmbeddingApiOptions>() ?? throw new InvalidOperationException("OpenAiEmbeddingApiOptions is not configured properly.");
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiEmbeddingApiOptions.AccessToken);
             httpClient.DefaultRequestHeaders.Add("OpenAI-Organization", openAiEmbeddingApiOptions.OrganizationId);

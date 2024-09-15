@@ -2,9 +2,8 @@ using AlbinRonnkvist.HybridSearch.Api;
 using AlbinRonnkvist.HybridSearch.Embedding;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.ConfigureApiProject(builder.Configuration, builder.Environment);
 builder.Services.ConfigureEmbeddingProject(builder.Configuration);
+builder.Services.ConfigureApiProject(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 

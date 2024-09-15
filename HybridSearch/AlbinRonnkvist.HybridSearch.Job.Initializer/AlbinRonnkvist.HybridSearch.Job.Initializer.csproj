@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,7 @@
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <AssemblyName>AlbinRonnkvist.HybridSearch.Job.Initializer</AssemblyName>
     <RootNamespace>AlbinRonnkvist.HybridSearch.Job.Initializer</RootNamespace>
-    <UserSecretsId>dotnet-Jobs.Initializer-66c2a84e-ba8b-40eb-bd7a-e455a0d1fc4a</UserSecretsId>
+    <UserSecretsId>1dc85df5-c665-4c8a-a32e-c5aa99f0ffca</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

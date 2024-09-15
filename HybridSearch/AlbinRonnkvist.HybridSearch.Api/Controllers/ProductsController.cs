@@ -1,5 +1,6 @@
 using AlbinRonnkvist.HybridSearch.Api.Dtos;
-using AlbinRonnkvist.HybridSearch.Api.Validators;
+using AlbinRonnkvist.HybridSearch.Api.Helpers.Validators;
+using AlbinRonnkvist.HybridSearch.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlbinRonnkvist.HybridSearch.Api.Controllers;
@@ -8,24 +9,26 @@ namespace AlbinRonnkvist.HybridSearch.Api.Controllers;
 [ApiExplorerSettings(GroupName = "v1")]
 [Route("api/v{v:apiversion}/products")]
 [ApiController]
-public class ProductsController : ControllerBase
+public class ProductsController(ISearcher<ProductSearchResponse> productSearcher) : ControllerBase
 {
+    private readonly ISearcher<ProductSearchResponse> _productSearcher = productSearcher;
+
     [HttpGet]
-    public async Task<IActionResult> Search([FromQuery] string query)
-    {
-        await Task.CompletedTask;
-        
-        var sanitizedQuery = ProductSearchValidator.SanitizeQuery(query);
-        
-        // TODO: Pass sanitized query a searcher service
-
-        var response = new ProductSearchResponse
+    public async Task<IActionResult> Search([FromQuery] ProductSearchRequest request)
+    {        
+        var sanitizedRequest = ProductSearchValidator.ValidateAndSanitizeRequest(request);
+        if (sanitizedRequest.IsFailure)
         {
-            Query = query,
-            Hits = 0,
-            Products = []
-        };
+            return BadRequest(sanitizedRequest.Error);
+        }
 
-        return Ok(response);
+        var productSearchResult = await _productSearcher.KeywordSearch(sanitizedRequest.Value.Query,
+            sanitizedRequest.Value.PageNumber, sanitizedRequest.Value.PageSize);
+        if (productSearchResult.IsFailure)
+        {
+            return BadRequest(productSearchResult.Error);
+        }
+
+        return Ok(productSearchResult.Value);
     }
 }
