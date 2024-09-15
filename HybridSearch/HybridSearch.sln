@@ -11,11 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Embedding", "AlbinRonnkvist.HybridSearch.Embedding\AlbinRonnkvist.HybridSearch.Embedding.csproj", "{D33861FC-2E75-44D2-A676-BEA07295C915}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Embedding.Tests", "AlbinRonnkvist.HybridSearch.Embedding.Tests\AlbinRonnkvist.HybridSearch.Embedding.Tests.csproj", "{513A7B7C-F597-4304-B6D5-67A9D50DB698}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api", "AlbinRonnkvist.HybridSearch.Api\AlbinRonnkvist.HybridSearch.Api.csproj", "{DAEBFD51-0F3B-4572-AC10-D893D1B192AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Api.Tests", "AlbinRonnkvist.HybridSearch.Api.Tests\AlbinRonnkvist.HybridSearch.Api.Tests.csproj", "{78EAF1B3-CF22-4A68-BE16-6EF6460EC2EC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbinRonnkvist.HybridSearch.Embedding.Tests", "AlbinRonnkvist.HybridSearch.Embedding.Tests\AlbinRonnkvist.HybridSearch.Embedding.Tests.csproj", "{513A7B7C-F597-4304-B6D5-67A9D50DB698}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -13,7 +13,7 @@ internal static class ServiceCollectionExtensions
     internal static void ConfigureApiProject(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment environment) 
     {
-        services.ConfigureSwagger(configuration, environment);
+        services.ConfigureSwagger(environment);
         services.AddControllers();
         services.ConfigureApiVersioning();
         services.ConfigureCustomServices();
@@ -30,7 +30,7 @@ internal static class ServiceCollectionExtensions
         });
     }
 
-    private static void ConfigureSwagger(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    private static void ConfigureSwagger(this IServiceCollection services, IHostEnvironment environment)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
