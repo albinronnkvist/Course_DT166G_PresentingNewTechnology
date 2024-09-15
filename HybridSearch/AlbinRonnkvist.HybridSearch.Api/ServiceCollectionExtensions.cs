@@ -1,3 +1,8 @@
+using AlbinRonnkvist.HybridSearch.Api.Dtos;
+using AlbinRonnkvist.HybridSearch.Api.Options;
+using AlbinRonnkvist.HybridSearch.Api.Services;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 
@@ -11,6 +16,8 @@ internal static class ServiceCollectionExtensions
         services.ConfigureSwagger(configuration, environment);
         services.AddControllers();
         services.ConfigureApiVersioning();
+        services.ConfigureCustomServices();
+        services.ConfigureElasticsearch(configuration, environment);
     }
 
     private static void ConfigureApiVersioning(this IServiceCollection services)
@@ -71,5 +78,37 @@ internal static class ServiceCollectionExtensions
                 });
             });
         }
+    }
+
+    private static void ConfigureElasticsearch(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    {
+        services.Configure<ElasticsearchOptions>(configuration.GetSection(nameof(ElasticsearchOptions)));
+        services.AddOptionsWithValidateOnStart<ElasticsearchOptions, ElasticsearchOptionsValidator>(nameof(ElasticsearchOptions));
+
+        var elasticsearchOptions = configuration.
+            GetSection(nameof(ElasticsearchOptions))
+            .Get<ElasticsearchOptions>() ?? throw new InvalidOperationException("ElasticsearchOptions is not configured properly.");
+        
+        var elasticSearchSettings = ConfigureElasticsearchSettings(environment, elasticsearchOptions);
+
+        services.AddSingleton(new ElasticsearchClient(elasticSearchSettings));
+    }
+
+    private static ElasticsearchClientSettings ConfigureElasticsearchSettings(IHostEnvironment environment, ElasticsearchOptions elasticsearchOptions)
+    {
+        if(environment.IsDevelopment())
+        {
+            return new ElasticsearchClientSettings(new Uri(elasticsearchOptions.Url))
+                .DisableDirectStreaming();
+        }
+
+        return new ElasticsearchClientSettings(new Uri(elasticsearchOptions.Url))
+                    .CertificateFingerprint(elasticsearchOptions.FingerPrint)
+                    .Authentication(new BasicAuthentication(elasticsearchOptions.Username, elasticsearchOptions.Password));
+    }
+
+    private static void ConfigureCustomServices(this IServiceCollection services)
+    {
+        services.AddTransient<ISearcher<ProductSearchResponse>, ProductSearcher<ProductSearchResponse>>();
     }
 }
