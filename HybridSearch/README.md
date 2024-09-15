@@ -30,6 +30,7 @@ Add your Open AI credentials to _secrets.json_ in the `AlbinRonnkvist.HybridSear
 ### Elasticsearch
 
 1. Run the initializer (This will create a new _Product_ index in Elasticsearch and load data from _products-example.json_): 
+    - (Optional) Enable `ProductIndexOptions:GenerateEmbeddings` for testing semantic serch
     - cd into the `AlbinRonnkvist.HybridSearch.Jobs.Initializer` project
     - Run: `dotnet run`. 
 2. Experiment in [Kibana](http://localhost:5601/app/dev_tools#/console):
