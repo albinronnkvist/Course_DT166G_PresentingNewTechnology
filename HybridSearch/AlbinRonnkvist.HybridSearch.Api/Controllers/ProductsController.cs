@@ -1,6 +1,6 @@
 using AlbinRonnkvist.HybridSearch.Api.Dtos;
+using AlbinRonnkvist.HybridSearch.Api.Helpers.Validators;
 using AlbinRonnkvist.HybridSearch.Api.Services;
-using AlbinRonnkvist.HybridSearch.Api.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlbinRonnkvist.HybridSearch.Api.Controllers;
@@ -14,11 +14,16 @@ public class ProductsController(ISearcher<ProductSearchResponse> productSearcher
     private readonly ISearcher<ProductSearchResponse> _productSearcher = productSearcher;
 
     [HttpGet]
-    public async Task<IActionResult> Search([FromQuery] string query)
+    public async Task<IActionResult> Search([FromQuery] ProductSearchRequest request)
     {        
-        var sanitizedQuery = ProductSearchValidator.SanitizeQuery(query);
+        var sanitizedRequest = ProductSearchValidator.ValidateAndSanitizeRequest(request);
+        if (sanitizedRequest.IsFailure)
+        {
+            return BadRequest(sanitizedRequest.Error);
+        }
 
-        var productSearchResult = await _productSearcher.KeywordSearch(sanitizedQuery);
+        var productSearchResult = await _productSearcher.KeywordSearch(sanitizedRequest.Value.Query,
+            sanitizedRequest.Value.PageNumber, sanitizedRequest.Value.PageSize);
         if (productSearchResult.IsFailure)
         {
             return BadRequest(productSearchResult.Error);

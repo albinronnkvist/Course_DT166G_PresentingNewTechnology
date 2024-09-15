@@ -11,12 +11,12 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient) : ISearche
 {
     private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
 
-    public async Task<Result<ProductSearchResponse, string>> KeywordSearch(string query)
+    public async Task<Result<ProductSearchResponse, string>> KeywordSearch(string query, int pageNumber, int pageSize)
     {
         var searchDescriptor = new SearchRequestDescriptor<Core.Models.Product>()
             .Index(IndexNamingConvention.GetSearchAlias(ProductIndexConstants.IndexName))
-            .From(DefaultSearchConstants.DefaultPageNumber)
-            .Size(DefaultSearchConstants.DefaultPageSize)
+            .From(pageNumber * pageSize)
+            .Size(pageSize)
             .Query(q => q
                 .Match(m => m
                     .Field(f => f.Title)
@@ -34,8 +34,8 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient) : ISearche
         var productSearchResponse = new ProductSearchResponse
         {
             Query = query,
-            PageNumber = DefaultSearchConstants.DefaultPageNumber,
-            PageSize = DefaultSearchConstants.DefaultPageSize,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
             TotalPageHits = response.Hits.Count,
             TotalHits = response.Total,
             ServerResponseTime = response.Took,

@@ -109,6 +109,6 @@ internal static class ServiceCollectionExtensions
 
     private static void ConfigureCustomServices(this IServiceCollection services)
     {
-        services.AddTransient<ISearcher<ProductSearchResponse>, ProductSearcher<ProductSearchResponse>>();
+        services.AddTransient<ISearcher<ProductSearchResponse>, ProductSearcher>();
     }
 }
