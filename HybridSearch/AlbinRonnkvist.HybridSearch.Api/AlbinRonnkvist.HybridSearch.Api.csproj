@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,6 +7,7 @@
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <AssemblyName>AlbinRonnkvist.HybridSearch.Api</AssemblyName>
     <RootNamespace>AlbinRonnkvist.HybridSearch.Api</RootNamespace>
+    <UserSecretsId>e19c5e46-7837-48d5-bd7a-82181e3398ff</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

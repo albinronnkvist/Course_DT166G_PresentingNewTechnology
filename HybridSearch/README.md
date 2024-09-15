@@ -4,24 +4,36 @@ Hybrid Search implemented in C# .NET & Elasticsearch by Roberto Piran Amedi and 
 
 # Getting Started
 
-## Local Elasticsearch setup
+## Elasticsearch local setup
 
 - Windows: follow the guide https://www.elastic.co/guide/en/elasticsearch/reference/current/run-elasticsearch-locally.html
 - Linux/Mac: Run the `DevSetup/SetupElasticsearch.sh` script.
   - cd into `DevSetup`
   - Run: `./SetupElasticsearch.sh`
 
-## Open AI setup
+## Setup credentials
 
-Add your Open AI credentials to _secrets.json_ in the `AlbinRonnkvist.HybridSearch.Job.Initializer` project:
+Run the `SetupSecrets.sh` script in the `Devsetup` folder to add all secrets. Or follow the sections below for manual setup.
 
-```bash
-"OpenAiEmbeddingApiOptions": {
-    "AccessToken": "your-access-token",
-    "OrganizationId": "your-organization-id",
-    "ProjectId": "your-project-id"
-}
-```
+### Open AI credentials
+
+Add your Open AI credentials to _secrets.json_ in the `AlbinRonnkvist.HybridSearch.Job.Initializer` and `AlbinRonnkvist.HybridSearch.Api` projects:
+
+- cd into the project
+- Init user secrets with the same `<UserSecretsId>` defined in the project's `.csproj`-file:
+    ```bash
+    dotnet user-secrets init --id <UserSecretsId>
+    ```
+- Add the following secrets with your own values:
+    ```bash
+    dotnet user-secrets set "OpenAiEmbeddingApiOptions:AccessToken" "your-access-token"
+    dotnet user-secrets set "OpenAiEmbeddingApiOptions:OrganizationId" "your-organization-id"
+    dotnet user-secrets set "OpenAiEmbeddingApiOptions:ProjectId" "your-project-id"
+    ```
+- Verify:
+    ```bash
+    dotnet user-secrets list
+    ```
 
 # Build and Test
 
