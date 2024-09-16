@@ -22,7 +22,7 @@ public class ProductsController(ISearcher<ProductSearchResponse> productSearcher
             return BadRequest(sanitizedRequest.Error);
         }
 
-        var productSearchResult = await _productSearcher.KeywordSearch(sanitizedRequest.Value.Query,
+        var productSearchResult = await _productSearcher.HybridSearch(sanitizedRequest.Value.Query,
             sanitizedRequest.Value.PageNumber, sanitizedRequest.Value.PageSize);
         if (productSearchResult.IsFailure)
         {
