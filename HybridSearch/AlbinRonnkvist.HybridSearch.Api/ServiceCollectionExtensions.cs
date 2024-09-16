@@ -83,7 +83,6 @@ internal static class ServiceCollectionExtensions
     private static void ConfigureElasticsearch(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         services.Configure<ElasticsearchOptions>(configuration.GetSection(nameof(ElasticsearchOptions)));
-        services.AddOptionsWithValidateOnStart<ElasticsearchOptions, ElasticsearchOptionsValidator>(nameof(ElasticsearchOptions));
 
         var elasticsearchOptions = configuration.
             GetSection(nameof(ElasticsearchOptions))

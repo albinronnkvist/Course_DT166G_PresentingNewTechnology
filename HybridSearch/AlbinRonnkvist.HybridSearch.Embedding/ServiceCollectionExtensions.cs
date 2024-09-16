@@ -4,6 +4,7 @@ using AlbinRonnkvist.HybridSearch.Embedding.Options;
 using AlbinRonnkvist.HybridSearch.Embedding.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 
@@ -14,7 +15,6 @@ public static class ServiceCollectionExtensions
     public static void ConfigureEmbeddingProject(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<OpenAiEmbeddingApiOptions>(configuration.GetSection(nameof(OpenAiEmbeddingApiOptions)));
-        services.AddOptionsWithValidateOnStart<OpenAiEmbeddingApiOptions, OpenAiEmbeddingApiOptionsValidator>(nameof(OpenAiEmbeddingApiOptions));
 
         services.AddTransient<IEmbeddingGenerator, OpenAiEmbeddingGenerator>();
         services.AddHttpClient<IEmbeddingApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>, OpenAiApiClient<OpenAiApiClientRequest, OpenAiApiClientResponse>>((serviceProvider, httpClient) => {
