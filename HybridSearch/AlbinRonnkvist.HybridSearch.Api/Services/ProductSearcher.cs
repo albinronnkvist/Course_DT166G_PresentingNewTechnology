@@ -5,6 +5,7 @@ using AlbinRonnkvist.HybridSearch.Api.Dtos;
 using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch;
 using AlbinRonnkvist.HybridSearch.Embedding.Services;
+using AlbinRonnkvist.HybridSearch.Api.Helpers;
 
 namespace AlbinRonnkvist.HybridSearch.Api.Services;
 
@@ -13,6 +14,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
 {
     private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
     private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
+
 
     public async Task<Result<ProductSearchResponse, string>> KeywordSearch(string query, int pageNumber, int pageSize)
     {
@@ -55,6 +57,38 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
             TotalPageHits = response.Value.Hits.Count,
             TotalHits = response.Value.Total,
             ServerResponseTime = response.Value.Took,
+            Products = products
+        };
+
+        return CSharpFunctionalExtensions.Result.Success<ProductSearchResponse, string>(productSearchResponse);
+    }
+
+    public async Task<Result<ProductSearchResponse, string>> HybridSearch(string query, int pageNumber, int pageSize)
+    {
+        var keywordSearchTask = ExecuteKeywordSearch(query, pageNumber, pageSize);
+        var semanticSearchTask = ExecuteSemanticSearch(query, pageNumber, pageSize);
+        await Task.WhenAll(keywordSearchTask, semanticSearchTask);
+
+        var keywordSearchResult = await keywordSearchTask;
+        var semanticSearchResult = await semanticSearchTask;
+        if(!keywordSearchResult.IsValidResponse || 
+            semanticSearchResult.IsFailure ||
+            !semanticSearchResult.Value.IsValidResponse)
+        {
+            return CSharpFunctionalExtensions.Result.Failure<ProductSearchResponse, string>("Invalid response from Elasticsearch");
+        }
+
+        var combinedResult = RRFCombiner.Combine(keywordSearchResult, semanticSearchResult.Value, pageSize);
+
+        var products = ProductMapper.Map(combinedResult);
+        var productSearchResponse = new ProductSearchResponse
+        {
+            Query = query,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalPageHits = products.Count,
+            TotalHits = keywordSearchResult.Total + semanticSearchResult.Value.Total, // Not correct but no other option right now
+            ServerResponseTime = keywordSearchResult.Took > semanticSearchResult.Value.Took ? keywordSearchResult.Took : semanticSearchResult.Value.Took,
             Products = products
         };
 
