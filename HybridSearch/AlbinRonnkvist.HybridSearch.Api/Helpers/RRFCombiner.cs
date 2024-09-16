@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Elastic.Clients.Elasticsearch;
+using AlbinRonnkvist.HybridSearch.Api.Dtos;
 
 namespace AlbinRonnkvist.HybridSearch.Api.Helpers;
 
@@ -15,7 +15,7 @@ public static class RRFCombiner
         var keywordResults = ExtractResults<TDocument>(keywordSearchResponse);
         var semanticResults = ExtractResults<TDocument>(semanticSearchResponse);
 
-        var combinedScores = new Dictionary<string, (TDocument Document, double Score)>();
+        var combinedScores = new Dictionary<int, (TDocument Document, double Score)>();
         AssignRRFScore<TDocument>(combinedScores, keywordResults);
         AssignRRFScore<TDocument>(combinedScores, semanticResults);
 
@@ -27,26 +27,21 @@ public static class RRFCombiner
             .AsReadOnly();
     }
 
-    private static Dictionary<string, (TDocument Document, int Rank)> ExtractResults<TDocument>(SearchResponse<TDocument> searchResponse)
+    private static Dictionary<int, (TDocument Document, int Rank)> ExtractResults<TDocument>(SearchResponse<TDocument> searchResponse)
     {
-        var results = new Dictionary<string, (TDocument Document, int Rank)>();
+        var results = new Dictionary<int, (TDocument Document, int Rank)>();
         var hits = searchResponse.Hits;
 
         for (int i = 0; i < hits.Count(); i++)
         {
-            var document = hits.ElementAt(i);
-            if (document.Id is null || document.Source is null)
-            {
-                continue;
-            }
-            
-            results[document.Id] = (document.Source, i + 1);
+            var hit = hits.ElementAt(i);            
+            results[hit.Id] = (hit.Document, i + 1);
         }
 
         return results;
     }
 
-    private static void AssignRRFScore<TDocument>(Dictionary<string, (TDocument Document, double Score)> combinedScores, Dictionary<string, (TDocument Document, int Rank)> results)
+    private static void AssignRRFScore<TDocument>(Dictionary<int, (TDocument Document, double Score)> combinedScores, Dictionary<int, (TDocument Document, int Rank)> results)
     {
         foreach (var result in results)
         {

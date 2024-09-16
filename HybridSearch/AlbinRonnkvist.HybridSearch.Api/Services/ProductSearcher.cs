@@ -15,24 +15,23 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
     private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
     private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
 
-
     public async Task<Result<ProductSearchResponse, string>> KeywordSearch(string query, int pageNumber, int pageSize)
     {
-        var response = await ExecuteKeywordSearch(query, pageNumber, pageSize);
-        if (!response.IsValidResponse)
+        var result = await ExecuteKeywordSearch(query, pageNumber, pageSize);
+        if (result.IsFailure)
         {
-            return CSharpFunctionalExtensions.Result.Failure<ProductSearchResponse, string>("Invalid response from Elasticsearch");
+            return CSharpFunctionalExtensions.Result.Failure<ProductSearchResponse, string>(result.Error);
         }
 
-        var products = ProductMapper.Map(response.Documents);
+        var products = ProductMapper.Map(result.Value.Hits);
         var productSearchResponse = new ProductSearchResponse
         {
             Query = query,
             PageNumber = pageNumber,
             PageSize = pageSize,
-            TotalPageHits = response.Hits.Count,
-            TotalHits = response.Total,
-            ServerResponseTime = response.Took,
+            TotalPageHits = result.Value.Hits.Count,
+            TotalHits = result.Value.TotalHits,
+            ServerResponseTime = result.Value.ServerResponseTime,
             Products = products
         };
 
@@ -42,21 +41,21 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
 
     public async Task<Result<ProductSearchResponse, string>> SemanticSearch(string query, int pageNumber, int pageSize)
     {
-        var response = await ExecuteSemanticSearch(query, pageNumber, pageSize);
-        if (response.IsFailure || !response.Value.IsValidResponse)
+        var result = await ExecuteSemanticSearch(query, pageNumber, pageSize);
+        if (result.IsFailure)
         {
             return CSharpFunctionalExtensions.Result.Failure<ProductSearchResponse, string>("Invalid response from Elasticsearch");
         }
 
-        var products = ProductMapper.Map(response.Value.Documents);
+        var products = ProductMapper.Map(result.Value.Hits);
         var productSearchResponse = new ProductSearchResponse
         {
             Query = query,
             PageNumber = pageNumber,
             PageSize = pageSize,
-            TotalPageHits = response.Value.Hits.Count,
-            TotalHits = response.Value.Total,
-            ServerResponseTime = response.Value.Took,
+            TotalPageHits = result.Value.Hits.Count,
+            TotalHits = result.Value.TotalHits,
+            ServerResponseTime = result.Value.ServerResponseTime,
             Products = products
         };
 
@@ -71,14 +70,13 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
 
         var keywordSearchResult = await keywordSearchTask;
         var semanticSearchResult = await semanticSearchTask;
-        if(!keywordSearchResult.IsValidResponse || 
-            semanticSearchResult.IsFailure ||
-            !semanticSearchResult.Value.IsValidResponse)
+        if(CSharpFunctionalExtensions.Result
+            .Combine<Result<Dtos.SearchResponse<Core.Models.Product>, string>>(keywordSearchResult, semanticSearchResult).IsFailure)
         {
             return CSharpFunctionalExtensions.Result.Failure<ProductSearchResponse, string>("Invalid response from Elasticsearch");
         }
 
-        var combinedResult = RRFCombiner.Combine(keywordSearchResult, semanticSearchResult.Value, pageSize);
+        var combinedResult = RRFCombiner.Combine(keywordSearchResult.Value, semanticSearchResult.Value, pageSize);
 
         var products = ProductMapper.Map(combinedResult);
         var productSearchResponse = new ProductSearchResponse
@@ -87,8 +85,10 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
             PageNumber = pageNumber,
             PageSize = pageSize,
             TotalPageHits = products.Count,
-            TotalHits = keywordSearchResult.Total + semanticSearchResult.Value.Total, // Not correct but no other option right now
-            ServerResponseTime = keywordSearchResult.Took > semanticSearchResult.Value.Took ? keywordSearchResult.Took : semanticSearchResult.Value.Took,
+            TotalHits = keywordSearchResult.Value.TotalHits + semanticSearchResult.Value.TotalHits, // Not correct but no other option right now
+            ServerResponseTime = keywordSearchResult.Value.ServerResponseTime > semanticSearchResult.Value.ServerResponseTime 
+                ? keywordSearchResult.Value.ServerResponseTime
+                : semanticSearchResult.Value.ServerResponseTime,
             Products = products
         };
 
@@ -96,7 +96,8 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
     }
 
 
-    private async Task<SearchResponse<Core.Models.Product>> ExecuteKeywordSearch(string query, int pageNumber, int pageSize)
+
+    private async Task<Result<Dtos.SearchResponse<Core.Models.Product>, string>> ExecuteKeywordSearch(string query, int pageNumber, int pageSize)
     {
         var searchDescriptor = new SearchRequestDescriptor<Core.Models.Product>()
                     .Index(IndexNamingConvention.GetSearchAlias(ProductIndexConstants.IndexName))
@@ -110,15 +111,21 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
                     );
 
         var response = await _elasticsearchClient.SearchAsync(searchDescriptor);
-        return response;
+        if(!response.IsValidResponse || response.TimedOut)
+        {
+            return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Invalid response from Elasticsearch");
+        }
+
+        var mappedResponse = SearchResponseMapper.Map(response.Documents, response.Total, response.Took);
+        return CSharpFunctionalExtensions.Result.Success<Dtos.SearchResponse<Core.Models.Product>, string>(mappedResponse);
     }
 
-    private async Task<Result<SearchResponse<Core.Models.Product>, string>> ExecuteSemanticSearch(string query, int pageNumber, int pageSize)
+    private async Task<Result<Dtos.SearchResponse<Core.Models.Product>, string>> ExecuteSemanticSearch(string query, int pageNumber, int pageSize)
     {
         var embeddingResult = await _embeddingGenerator.GenerateEmbedding(query, ProductIndexConstants.EmbeddingDimensions);
         if (embeddingResult.IsFailure)
         {
-            return CSharpFunctionalExtensions.Result.Failure<SearchResponse<Core.Models.Product>, string>(embeddingResult.Error);
+            return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Failed to generate embedding for query: " + query);
         }
 
         var queryVector = embeddingResult.Value.Select(d => (float)d).ToArray();
@@ -134,7 +141,14 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
                     .NumCandidates(30)
                 )
             );
+        
+        var response = await _elasticsearchClient.SearchAsync(searchDescriptor);
+        if(!response.IsValidResponse || response.TimedOut)
+        {
+            return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Invalid response from Elasticsearch");
+        }
 
-        return await _elasticsearchClient.SearchAsync(searchDescriptor);
+        var mappedResponse = SearchResponseMapper.Map(response.Documents, response.Total, response.Took);
+        return CSharpFunctionalExtensions.Result.Success<Dtos.SearchResponse<Core.Models.Product>, string>(mappedResponse);
     }
 }
