@@ -1,24 +1,20 @@
 using AlbinRonnkvist.HybridSearch.Core.Constants;
-using AlbinRonnkvist.HybridSearch.Job.Initializer.Options;
 using AlbinRonnkvist.HybridSearch.Job.Initializer.Services.IndexTemplates;
 using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch.Mapping;
-using Microsoft.Extensions.Options;
 
 namespace AlbinRonnkvist.HybridSearch.Job.Initializer.Indices.ProductIndex;
 
-public class ProductIndexTemplateManager(IOptions<ProductIndexOptions> options,
-    IIndexTemplateManager indexTemplateManager) : IProductIndexTemplateManager
+public class ProductIndexTemplateManager(IIndexTemplateManager indexTemplateManager) : IProductIndexTemplateManager
 {
     private readonly IIndexTemplateManager _indexTemplateManager = indexTemplateManager;
-    private readonly ProductIndexOptions _options = options.Value;
 
     public async Task<UnitResult<string>> CreateIndexTemplate(int newVersion, bool addSearchAlias, CancellationToken ct)
     {
         var request = new PutIndexTemplateRequestBuilder(ProductIndexConstants.IndexName, newVersion)
             .WithCustomMappings(new TypeMapping
             {
-                Properties = GetProperties(_options.EmbeddingDimensions)
+                Properties = GetProperties(ProductIndexConstants.EmbeddingDimensions)
             });
 
         if (addSearchAlias)

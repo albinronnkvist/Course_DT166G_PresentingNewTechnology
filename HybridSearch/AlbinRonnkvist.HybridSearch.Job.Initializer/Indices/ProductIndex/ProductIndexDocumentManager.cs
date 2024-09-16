@@ -77,7 +77,7 @@ public class ProductIndexDocumentManager(IDocumentManager<Product> documentManag
         {
             if(_options.GenerateEmbeddings)
             {
-                var embedding = await _embeddingGenerator.GenerateEmbedding(product.Title, _options.EmbeddingDimensions);
+                var embedding = await _embeddingGenerator.GenerateEmbedding(product.Title, ProductIndexConstants.EmbeddingDimensions);
                 if (embedding.IsFailure)
                 {
                     return Result.Failure<ReadOnlyCollection<Product>, string>("Failed to generate embedding for product: " + product.Title);
