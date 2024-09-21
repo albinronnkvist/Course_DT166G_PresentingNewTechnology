@@ -40,19 +40,19 @@ public class HybridSearchApiClient(HttpClient httpClient) : IHybridSearchApiClie
         var queryParams = new Dictionary<string, string?>();
         if (!string.IsNullOrWhiteSpace(request.Query))
         {
-            queryParams.Add("query", request.Query);
+            queryParams.Add("Query", request.Query);
         }
 
         if (request.PageNumber.HasValue)
         {
-            queryParams.Add("pageNumber", request.PageNumber.Value.ToString());
+            queryParams.Add("PageNumber", request.PageNumber.Value.ToString());
         }
 
         if (request.PageSize.HasValue)
         {
-            queryParams.Add("pageSize", request.PageSize.Value.ToString());
+            queryParams.Add("PageSize", request.PageSize.Value.ToString());
         }
 
-        return QueryHelpers.AddQueryString("products/search", queryParams);
+        return QueryHelpers.AddQueryString("products", queryParams);
     }
 }
