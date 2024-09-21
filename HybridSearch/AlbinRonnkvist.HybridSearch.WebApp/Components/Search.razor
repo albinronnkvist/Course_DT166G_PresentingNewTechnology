@@ -1,0 +1,104 @@
+@using AlbinRonnkvist.HybridSearch.WebApp.ApiClients;
+@using AlbinRonnkvist.HybridSearch.WebApp.Dtos;
+@inject IHybridSearchApiClient HybridSearchApiClient
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="input-group">
+                <input @bind="searchTerm" @bind:event="oninput" type="text" class="form-control form-control-lg" placeholder="Search for products..." />
+                <button class="btn btn-primary btn-lg" @onclick="SearchApi">Search</button>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center mt-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+
+    @if (errorMessage != null)
+    {
+        <div class="alert alert-danger mt-4 text-center">
+            <strong>Error:</strong> @errorMessage
+        </div>
+    }
+
+    @if (products != null && products.Any())
+    {
+        <div class="row mt-4">
+            @foreach (var product in products)
+            {
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Title</h5>
+                            <!-- Additional product info could go here -->
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (!isLoading && !string.IsNullOrEmpty(searchTerm) && products != null && !products.Any())
+    {
+        <div class="text-center mt-4">
+            <p>No products found.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private string searchTerm = string.Empty;
+    private List<Product>? products = null;
+    private bool isLoading = false;
+    private string? errorMessage = null;
+
+    private async Task SearchApi()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return;
+        }
+
+        isLoading = true;
+        products = null;
+        errorMessage = null;
+
+        try
+        {
+            var request = new ProductSearchRequest
+            {
+                Query = searchTerm
+            };
+
+            var result = await HybridSearchApiClient.ProductSearch(request);
+
+            if (result.IsSuccess)
+            {
+                products = result.Value.Products;
+
+                if (products == null || !products.Any())
+                {
+                    errorMessage = "No products were found for the search term.";
+                }
+            }
+            else
+            {
+                errorMessage = $"Search failed: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An unexpected error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
