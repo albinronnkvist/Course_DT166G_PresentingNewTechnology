@@ -2,37 +2,73 @@
 @using AlbinRonnkvist.HybridSearch.WebApp.Dtos;
 @inject IHybridSearchApiClient HybridSearchApiClient
 
-<div class="d-flex justify-content-center align-items-center" style="height: 200px;">
-    <div class="input-group w-50">
-        <input @bind="searchTerm" @bind:event="oninput" type="text" class="form-control" placeholder="Search..." />
-        <button class="btn btn-primary" @onclick="SearchApi">Search</button>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="input-group">
+                <input @bind="searchTerm" @bind:event="oninput" type="text" class="form-control form-control-lg" placeholder="Search for products..." />
+                <button class="btn btn-primary btn-lg" @onclick="SearchApi">Search</button>
+            </div>
+        </div>
     </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center mt-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+
+    @if (errorMessage != null)
+    {
+        <div class="alert alert-danger mt-4 text-center">
+            <strong>Error:</strong> @errorMessage
+        </div>
+    }
+
+    @if (products != null && products.Any())
+    {
+        <div class="row mt-4">
+            @foreach (var product in products)
+            {
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Title</h5>
+                            <!-- Additional product info could go here -->
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (!isLoading && !string.IsNullOrEmpty(searchTerm) && products != null && !products.Any())
+    {
+        <div class="text-center mt-4">
+            <p>No products found.</p>
+        </div>
+    }
 </div>
-
-@if (isLoading)
-{
-    <p>Loading...</p>
-}
-
-@if (response != null)
-{
-    <div class="mt-4">
-        <h5>Results:</h5>
-        <p>@response</p>
-    </div>
-}
 
 @code {
     private string searchTerm = string.Empty;
-    private string? response;
+    private List<Product>? products = null;
     private bool isLoading = false;
+    private string? errorMessage = null;
 
     private async Task SearchApi()
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
+        {
             return;
+        }
 
         isLoading = true;
+        products = null;
+        errorMessage = null;
+
         try
         {
             var request = new ProductSearchRequest
@@ -44,16 +80,21 @@
 
             if (result.IsSuccess)
             {
-                response = $"Success: {result.Value}";
+                products = result.Value.Products;
+
+                if (products == null || !products.Any())
+                {
+                    errorMessage = "No products were found for the search term.";
+                }
             }
             else
             {
-                response = $"Failure: {result.Error}";
+                errorMessage = $"Search failed: {result.Error}";
             }
         }
         catch (Exception ex)
         {
-            response = $"Error: {ex.Message}";
+            errorMessage = $"An unexpected error occurred: {ex.Message}";
         }
         finally
         {
