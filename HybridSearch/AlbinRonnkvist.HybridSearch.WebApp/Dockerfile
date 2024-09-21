@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["AlbinRonnkvist.HybridSearch.WebApp/AlbinRonnkvist.HybridSearch.WebApp.csproj", "AlbinRonnkvist.HybridSearch.WebApp/"]
-COPY ["AlbinRonnkvist.HybridSearch.Embedding/AlbinRonnkvist.HybridSearch.Embedding.csproj", "AlbinRonnkvist.HybridSearch.Embedding/"]
+COPY ["AlbinRonnkvist.HybridSearch.Core/AlbinRonnkvist.HybridSearch.Core.csproj", "AlbinRonnkvist.HybridSearch.Core/"]
 RUN dotnet restore "AlbinRonnkvist.HybridSearch.WebApp/AlbinRonnkvist.HybridSearch.WebApp.csproj"
 
 COPY . .

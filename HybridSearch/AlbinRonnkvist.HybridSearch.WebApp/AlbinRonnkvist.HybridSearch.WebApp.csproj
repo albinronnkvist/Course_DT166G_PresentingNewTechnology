@@ -22,6 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AlbinRonnkvist.HybridSearch.Embedding\AlbinRonnkvist.HybridSearch.Embedding.csproj" />
+    <ProjectReference Include="..\AlbinRonnkvist.HybridSearch.Core\AlbinRonnkvist.HybridSearch.Core.csproj" />
   </ItemGroup>
 </Project>

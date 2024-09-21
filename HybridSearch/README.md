@@ -26,3 +26,16 @@ Run the initializer (This will create a new _Product_ index in Elasticsearch and
 Run Api and WebApp: 
 - cd into the solution root folder
 - Run: `docker compose up --build`
+
+# Cleanup
+
+Apps:
+```bash
+docker compose down
+docker rmi hybridsearch-api hybridsearch-webapp
+```
+
+Everything:
+```bash
+docker system prune
+```
