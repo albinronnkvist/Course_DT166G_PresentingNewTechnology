@@ -1,0 +1,63 @@
+@using AlbinRonnkvist.HybridSearch.WebApp.ApiClients;
+@using AlbinRonnkvist.HybridSearch.WebApp.Dtos;
+@inject IHybridSearchApiClient HybridSearchApiClient
+
+<div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+    <div class="input-group w-50">
+        <input @bind="searchTerm" @bind:event="oninput" type="text" class="form-control" placeholder="Search..." />
+        <button class="btn btn-primary" @onclick="SearchApi">Search</button>
+    </div>
+</div>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+
+@if (response != null)
+{
+    <div class="mt-4">
+        <h5>Results:</h5>
+        <p>@response</p>
+    </div>
+}
+
+@code {
+    private string searchTerm = string.Empty;
+    private string? response;
+    private bool isLoading = false;
+
+    private async Task SearchApi()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+            return;
+
+        isLoading = true;
+        try
+        {
+            var request = new ProductSearchRequest
+            {
+                Query = searchTerm
+            };
+
+            var result = await HybridSearchApiClient.ProductSearch(request);
+
+            if (result.IsSuccess)
+            {
+                response = $"Success: {result.Value}";
+            }
+            else
+            {
+                response = $"Failure: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            response = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
