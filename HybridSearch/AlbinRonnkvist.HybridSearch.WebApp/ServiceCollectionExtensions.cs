@@ -8,13 +8,8 @@ namespace AlbinRonnkvist.HybridSearch.WebApp;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static void ConfigureWebAppProject(this IServiceCollection services,
-        WebAssemblyHostConfiguration hostConfiguration, IWebAssemblyHostEnvironment hostEnvironment) 
+    internal static void ConfigureWebAppProject(this IServiceCollection services, WebAssemblyHostConfiguration hostConfiguration) 
     {
-        hostConfiguration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{hostEnvironment.Environment}.json", optional: false, reloadOnChange: true);
-
         services.Configure<HybridSearchApiOptions>(hostConfiguration.GetSection(nameof(HybridSearchApiOptions)));
 
         services.AddHttpClient<IHybridSearchApiClient, HybridSearchApiClient>((serviceProvider, httpClient) => {
