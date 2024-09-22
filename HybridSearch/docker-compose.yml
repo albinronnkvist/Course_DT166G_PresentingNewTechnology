@@ -34,11 +34,11 @@ services:
       context: .
       dockerfile: ./AlbinRonnkvist.HybridSearch.Api/Dockerfile
     ports:
-      - "5000:5000"
+      - "3000:3000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORT=5000
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_HTTP_PORT=3000
+      - ASPNETCORE_URLS=http://+:3000
     depends_on:
       - elasticsearch
     networks:
