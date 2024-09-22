@@ -113,7 +113,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
         var response = await _elasticsearchClient.SearchAsync(searchDescriptor);
         if(!response.IsValidResponse || response.TimedOut)
         {
-            _logger.LogError("Failed to execute keyword search: {Error}", response.ElasticsearchServerError?.Error.Reason ?? "Unknown error");
+            _logger.LogError("Failed to execute keyword search: {Error}", response.DebugInformation ?? "Unknown error");
             return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Invalid response from Elasticsearch");
         }
 
@@ -147,7 +147,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
         var response = await _elasticsearchClient.SearchAsync(searchDescriptor);
         if(!response.IsValidResponse || response.TimedOut)
         {
-            _logger.LogError("Failed to execute semantic search: {Error}", response.ElasticsearchServerError?.Error.Reason ?? "Unknown error");
+            _logger.LogError("Failed to execute semantic search: {Error}", response.DebugInformation ?? "Unknown error");
             return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Invalid response from Elasticsearch");
         }
 
