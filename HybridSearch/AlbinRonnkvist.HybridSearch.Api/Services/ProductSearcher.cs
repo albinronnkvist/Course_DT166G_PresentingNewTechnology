@@ -10,10 +10,11 @@ using AlbinRonnkvist.HybridSearch.Api.Helpers;
 namespace AlbinRonnkvist.HybridSearch.Api.Services;
 
 public class ProductSearcher(ElasticsearchClient elasticsearchClient,
-    IEmbeddingGenerator embeddingGenerator) : ISearcher<ProductSearchResponse>
+    IEmbeddingGenerator embeddingGenerator, ILogger<ProductSearcher> logger) : ISearcher<ProductSearchResponse>
 {
     private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
     private readonly IEmbeddingGenerator _embeddingGenerator = embeddingGenerator;
+    private readonly ILogger<ProductSearcher> _logger = logger;
 
     public async Task<Result<ProductSearchResponse, string>> KeywordSearch(string query, int pageNumber, int pageSize)
     {
@@ -70,8 +71,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
 
         var keywordSearchResult = await keywordSearchTask;
         var semanticSearchResult = await semanticSearchTask;
-        if(CSharpFunctionalExtensions.Result
-            .Combine<Result<Dtos.SearchResponse<Core.Models.Product>, string>>(keywordSearchResult, semanticSearchResult).IsFailure)
+        if(keywordSearchResult.IsFailure || semanticSearchResult.IsFailure)
         {
             return CSharpFunctionalExtensions.Result.Failure<ProductSearchResponse, string>("Invalid response from Elasticsearch");
         }
@@ -113,6 +113,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
         var response = await _elasticsearchClient.SearchAsync(searchDescriptor);
         if(!response.IsValidResponse || response.TimedOut)
         {
+            _logger.LogError("Failed to execute keyword search: {Error}", response.ElasticsearchServerError?.Error.Reason ?? "Unknown error");
             return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Invalid response from Elasticsearch");
         }
 
@@ -125,6 +126,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
         var embeddingResult = await _embeddingGenerator.GenerateEmbedding(query, ProductIndexConstants.EmbeddingDimensions);
         if (embeddingResult.IsFailure)
         {
+            _logger.LogError("Failed to generate embeddings: {Error}", embeddingResult.Error);
             return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Failed to generate embedding for query: " + query);
         }
 
@@ -145,6 +147,7 @@ public class ProductSearcher(ElasticsearchClient elasticsearchClient,
         var response = await _elasticsearchClient.SearchAsync(searchDescriptor);
         if(!response.IsValidResponse || response.TimedOut)
         {
+            _logger.LogError("Failed to execute semantic search: {Error}", response.ElasticsearchServerError?.Error.Reason ?? "Unknown error");
             return CSharpFunctionalExtensions.Result.Failure<Dtos.SearchResponse<Core.Models.Product>, string>("Invalid response from Elasticsearch");
         }
 
