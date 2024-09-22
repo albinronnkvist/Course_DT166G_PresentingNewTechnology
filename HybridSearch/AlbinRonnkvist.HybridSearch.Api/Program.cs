@@ -17,5 +17,6 @@ else {
 }
 
 app.MapControllers();
+app.UseCors(AlbinRonnkvist.HybridSearch.Api.ServiceCollectionExtensions.CorsPolicy);
 
 app.Run();

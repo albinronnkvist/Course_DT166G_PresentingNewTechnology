@@ -10,6 +10,7 @@ namespace AlbinRonnkvist.HybridSearch.Api;
 
 internal static class ServiceCollectionExtensions
 {
+    internal const string CorsPolicy = "CorsPolicy";
     internal static void ConfigureApiProject(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment environment) 
     {
@@ -18,6 +19,7 @@ internal static class ServiceCollectionExtensions
         services.ConfigureApiVersioning();
         services.ConfigureCustomServices();
         services.ConfigureElasticsearch(configuration, environment);
+        services.ConfigureCors();
     }
 
     private static void ConfigureApiVersioning(this IServiceCollection services)
@@ -27,6 +29,19 @@ internal static class ServiceCollectionExtensions
             opt.ReportApiVersions = true;
             opt.AssumeDefaultVersionWhenUnspecified = true;
             opt.DefaultApiVersion = new ApiVersion(1, 0);
+        });
+    }
+
+    private static void ConfigureCors(this IServiceCollection services)
+    {
+        services.AddCors(opt =>
+        {
+            opt.AddPolicy(CorsPolicy, builder =>
+            {
+                builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin();
+            });
         });
     }
 
