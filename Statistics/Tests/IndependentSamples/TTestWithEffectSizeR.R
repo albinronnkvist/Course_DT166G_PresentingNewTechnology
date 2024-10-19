@@ -7,7 +7,7 @@ t_value <- t_test$statistic
 df <- t_test$parameter
 
 # Calculate effect size r
-r <- t_value / sqrt(t_value^2 + df)
+r <- sqrt(t_value^2/(t_value^2+df))
 
 cat("t-value:", t_value, "\n")
 cat("Degrees of freedom (df):", df, "\n")
