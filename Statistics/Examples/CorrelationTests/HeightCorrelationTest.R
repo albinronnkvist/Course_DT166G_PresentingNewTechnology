@@ -1,14 +1,20 @@
-## load package ggplot2
+## load package ggplot2 (sudo R -e "install.packages('ggplot2')")
 library("ggplot2")
+
+
 
 ## load the data
 dat = read.csv("height.csv")
 
+# Variables
 weight = dat$Weight
 height = dat$Height
 shoeSize = dat$ShoeSize
 
-## Boxplot
+
+
+## Plots
+# Boxplot
 boxplot(shoeSize,
         col = "orange",
         ylab= "Value",
@@ -22,12 +28,11 @@ boxplot(height,
         )
 
 
-## Scatter plot and line of best fit
+# Scatter plot and line of best fit - Alt1
 plot(height, shoeSize)
 abline(lm(shoeSize ~ height))
 
-
-## Scatter plot and line of best fit
+# Scatter plot and line of best fit - Alt2
 ggplot(data = dat,
        aes(x= height,
            y=shoeSize,
@@ -45,17 +50,24 @@ ggplot(data = dat,
   )
 
 
+
+### Control assumptions
+## Normal Distribution Tests
 ##  Shapiro-Wilk normality test for the first group
 shapiro.test(shoeSize)
-
 ##  Shapiro-Wilk normality test for the second group
 shapiro.test(height)
 
+## Variance Tests
 ## Fisher's F test to compare the two variances
 var.test(shoeSize, height)
 
-## Pearson Correlation
+### Run correlation Tests
+## We ignore Pearson's Correlation Test since the data is not normally distributed
 #cor.test(height, shoeSize, method="pearson")
 
-## Spearman Correlation
-#cor.test(height, shoeSize, method="spearman")
+## We also ignore Kendall's Correlation Test since the dataset is quite large
+#cor.test(height, shoeSize, method="kendall")
+
+## Perform Spearman's Correlation Test
+cor.test(height, shoeSize, method="spearman")
