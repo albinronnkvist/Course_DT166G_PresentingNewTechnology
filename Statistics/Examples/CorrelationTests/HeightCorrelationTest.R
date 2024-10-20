@@ -51,7 +51,7 @@ shapiro.test(shoeSize)
 ##  Shapiro-Wilk normality test for the second group
 shapiro.test(height)
 
-##F test to compare the two variances
+## Fisher's F test to compare the two variances
 var.test(shoeSize, height)
 
 ## Pearson Correlation
